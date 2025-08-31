@@ -3,9 +3,10 @@ class Board:
     def __init__ (self, mine_total):
         self.width = 10
         self.length = 10
-        self.is_mine = [[False]*self.width for _ in range(self.length)]
+        self.mines = [[False]*self.width for _ in range(self.length)]
         self.state   = [["COVERED"]*self.width for _ in range(self.length)]
         self.adj     = [[0]*self.width for _ in range(self.length)]
+        self.mine_total = mine_total
 
     def print_board(self, playing_state):
         cell_width = 3  # every column (including headers) takes 3 spaces
@@ -49,14 +50,64 @@ class Board:
     
     Parameters: takes in the index of the user's first move, r,c, how many mines the user wants on the board
     '''
-    def place_mine(self,user_r, user_c ,mine_total):
+    def place_mine(self,user_r, user_c ):
+        mine_count = self.mine_total
         excluded_cells = self.neighbors(user_r,user_c)
         excluded_cells.append((user_r,user_c))
-        while(mine_total > 0):
+        while(mine_count > 0):
             r = random.randint(0,9)
             c = random.randint(0,9)
-            if(self.is_mine[r][c] == False and (r,c) not in excluded_cells): #checking that index isn't already mine and not user's first move
-                self.is_mine[r][c] = True
-                mine_total-=1
+            if(self.mines[r][c] == False and (r,c) not in excluded_cells): #checking that index isn't already mine and not user's first move
+                self.mines[r][c] = True
+                mine_count-=1
             else: #if it is user's first move or already a mine
                 continue
+    '''
+    Functionality: returns whether cell is mine
+    Parameters: cell's row and column
+    '''
+    def is_mine(self,r,c):
+        return self.is_mine[r][c] == True
+        '''
+    Functionality: returns whether cell is flag
+    Parameters: cell's row and column
+    '''
+    def is_flag(self,r,c):
+        return self.state[r][c] == 'FLAG'
+        '''
+    Functionality: returns whether cell is already uncovered
+    Parameters: cell's row and column
+    '''
+    def is_uncovered(self,r,c):
+        return self.state[r][c] == 'UNCOVERED'
+    '''
+    Functionality: Uncovers the cell, given that it is a valid move(not already uncovered, not a flag)
+    Parameters: cell's row and column, if it is the first move
+    '''
+    def uncover(self,r,c,first_move):
+        #if it is the first move, need to place mines, compute neighbors, and fill zeroes where needed
+        #returns SAFE to tell game that this was a valid move
+        if first_move:
+           self.place_mine(r,c)
+           self.compute_numbers()
+           self.state[r][c] = 'UNCOVERED'
+           if self.adj[r][c] == 0:
+                self.fill_zeroes()
+           return 'SAFE'
+        #if it is not the first move
+        else:
+            #if it is a flag, tells Game to ask user to either enter a diff cell or remove flag
+            if self.is_flag(r,c):
+                return 'FLAGGED'
+            #if already uncovered, tells Game to ask user to redo
+            elif self.is_uncovered(r,c):
+                return 'REVEALED'
+            #check if mine, return HIT to tell game to end the game
+            elif self.is_mine(r,c):
+                return 'HIT'
+            #if it is a valid cell, returns SAFE to tell game this was a valid move
+            else:
+                self.state[r][c] = 'UNCOVERED'
+                if self.adj[r][c] == 0:
+                    self.fill_zeroes()
+                return 'SAFE'
