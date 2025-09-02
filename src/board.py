@@ -114,7 +114,7 @@ class Board:
                     self.fill_zeroes(r,c)
                 return 'SAFE'
 
-    def fill_zeroes(self,r,c):
+    def fill_zeroes(self,r,c): #ask later if we want minesweeper to uncover the flags or not, now it doesnt
         """
         Functionality: Uses BFS (queue) to uncover a connected region of tiles with zero mines as neighbors and their border numbers.
         Parameters: cell's row and column
@@ -123,10 +123,11 @@ class Board:
         if self.state[r][c] == 'FLAG' or self.mines[r][c]:
             return
         if self.adj[r][c] != 0:
-            # Not a zero — just uncover this single cell and stop.
+            # Not a zero, so just uncover this single cell and stop.
             self.state[r][c] = 'UNCOVERED'
             return
 
+        #Start of the BFS logic
         q = deque()
         visited = set()
 
