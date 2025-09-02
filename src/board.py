@@ -1,4 +1,6 @@
 import random
+from collections import deque
+
 class Board:
     def __init__ (self, mine_total):
         self.width = 10
@@ -67,7 +69,7 @@ class Board:
     Parameters: cell's row and column
     '''
     def is_mine(self,r,c):
-        return self.is_mine[r][c] == True
+        return self.mines[r][c] == True
         '''
     Functionality: returns whether cell is flag
     Parameters: cell's row and column
@@ -92,7 +94,7 @@ class Board:
            self.compute_numbers()
            self.state[r][c] = 'UNCOVERED'
            if self.adj[r][c] == 0:
-                self.fill_zeroes()
+                self.fill_zeroes(r,c)
            return 'SAFE'
         #if it is not the first move
         else:
@@ -109,5 +111,45 @@ class Board:
             else:
                 self.state[r][c] = 'UNCOVERED'
                 if self.adj[r][c] == 0:
-                    self.fill_zeroes()
+                    self.fill_zeroes(r,c)
                 return 'SAFE'
+
+    def fill_zeroes(self,r,c):
+        """
+        Functionality: Uses BFS (queue) to uncover a connected region of tiles with zero mines as neighbors and their border numbers.
+        Parameters: cell's row and column
+        """
+        # Only expand if the starting cell is actually a zero and not a mine/flag. This is handled in uncover, but to make it more robust
+        if self.state[r][c] == 'FLAG' or self.mines[r][c]:
+            return
+        if self.adj[r][c] != 0:
+            # Not a zero — just uncover this single cell and stop.
+            self.state[r][c] = 'UNCOVERED'
+            return
+
+        q = deque()
+        visited = set()
+
+        # Add the starting zero
+        q.append((r, c))
+        visited.add((r, c))
+        self.state[r][c] = 'UNCOVERED'
+
+        while q:
+            r, c = q.popleft()
+
+            # For every neighbor of a zero, uncover it.
+            for rr, cc in self.neighbors(r, c):
+                if (rr, cc) in visited:
+                    continue
+                if self.state[rr][cc] == 'FLAG':
+                    continue 
+                if self.mines[rr][cc]:
+                    continue  
+
+                visited.add((rr, cc))
+                self.state[rr][cc] = 'UNCOVERED'
+
+                # If neighbor is also zero, keep expanding from it
+                if self.adj[rr][cc] == 0:
+                    q.append((rr, cc))
