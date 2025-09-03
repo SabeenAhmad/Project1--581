@@ -170,3 +170,27 @@ class Board:
                 # If neighbor is also zero, keep expanding from it
                 if self.adj[rr][cc] == 0:
                     q.append((rr, cc))
+
+    def toggle_flag(self, r, c):
+        if not self.board.in_bounds(r, c):
+            return 'INVALID'
+
+        cell_state = self.board.state[r][c]
+
+        # cannot flag an uncovered cell
+        if cell_state == 'UNCOVERED':
+            return 'INVALID'
+
+        # unflag
+        if cell_state == 'FLAG':
+            self.board.state[r][c] = 'COVERED'
+            self.flags_remaining += 1
+            return 'UNFLAGGED'
+        
+        # place flag
+        if self.flags_remaining == 0:
+            return 'NO_FLAGS'
+
+        self.board.state[r][c] = 'FLAG'
+        self.flags_remaining -= 1
+        return 'FLAGGED'
