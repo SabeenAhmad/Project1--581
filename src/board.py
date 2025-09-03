@@ -64,6 +64,22 @@ class Board:
                 mine_count-=1
             else: #if it is user's first move or already a mine
                 continue
+    """
+    Compute numbers for all cells based on adjacent mines.
+    Updates self.adj so self.adj[r][c] = number of surrounding mines.
+    """
+    def compute_numbers(self):
+        for r in range(self.length):
+            for c in range(self.width):
+                if self.mines[r][c]:
+                    self.adj[r][c] = -1  # or keep as 0 if you prefer
+                else:
+                    count = 0
+                    for rr, cc in self.neighbors(r, c):
+                        if self.mines[rr][cc]:
+                            count += 1
+                    self.adj[r][c] = count
+
     '''
     Functionality: returns whether cell is mine
     Parameters: cell's row and column
