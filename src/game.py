@@ -2,6 +2,8 @@
 Game Class
 '''
 from board import Board
+from ui import UI
+
 class Game:
     #initializing Game
     def __init__ (self, mines_total):
@@ -14,14 +16,8 @@ class Game:
         self.flags_remaining = mines_total
         self.board = Board(self.mine_total)
         self.first_move = True
-        self.start_screen()
-    
-    def start_screen(self):
-        input("=== Welcome to Minesweeper ===\nPress ENTER to start...")
-        self.game_loop()
-    def game_loop(self):
-        print("\n--- Game started! ---")
-        self.board.print_board(self.playing_state)
-
-
-        
+  
+        # Moved UI files to ui.py class and made a class in that ui.py so we can call upon methods defined there. 
+        self.ui = UI(self, self.board)
+        self.ui.start_screen()
+ 
