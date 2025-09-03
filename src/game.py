@@ -2,6 +2,8 @@
 Game Class
 '''
 from board import Board
+from ui import UI
+
 class Game:
     #initializing Game
     def __init__ (self, mines_total):
@@ -14,6 +16,7 @@ class Game:
         self.flags_remaining = mines_total
         self.board = Board(self.mine_total)
         self.first_move = True
+<<<<<<< HEAD
         self.start_screen()
     
     def start_screen(self):
@@ -47,3 +50,10 @@ class Game:
         self.flags_remaining -= 1
         return 'FLAGGED'
             
+=======
+  
+        # Moved UI files to ui.py class and made a class in that ui.py so we can call upon methods defined there. 
+        self.ui = UI(self, self.board)
+        self.ui.start_screen()
+ 
+>>>>>>> main
