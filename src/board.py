@@ -9,6 +9,9 @@ class Board:
         self.state   = [["COVERED"]*self.width for _ in range(self.length)]
         self.adj     = [[0]*self.width for _ in range(self.length)]
         self.mine_total = mine_total
+        self.mine_remaining = mine_total 
+        self.playing_state = True
+        self.flags_remaining = mine_total
 
     def print_board(self, playing_state):
         cell_width = 3  # every column (including headers) takes 3 spaces

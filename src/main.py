@@ -1,6 +1,6 @@
-from game import Game
+from ui import UI
 
 def main():
-    run = Game(5)
+    #run = UI()
 
 main()
