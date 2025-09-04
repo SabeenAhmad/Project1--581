@@ -9,6 +9,9 @@ class Board:
         self.state   = [["COVERED"]*self.width for _ in range(self.length)]
         self.adj     = [[0]*self.width for _ in range(self.length)]
         self.mine_total = mine_total
+        self.mine_remaining = mine_total 
+        self.playing_state = True
+        self.flags_remaining = mine_total
 
     def print_board(self, playing_state):
         cell_width = 3  # every column (including headers) takes 3 spaces
@@ -64,6 +67,22 @@ class Board:
                 mine_count-=1
             else: #if it is user's first move or already a mine
                 continue
+    """
+    Compute numbers for all cells based on adjacent mines.
+    Updates self.adj so self.adj[r][c] = number of surrounding mines.
+    """
+    def compute_numbers(self):
+        for r in range(self.length):
+            for c in range(self.width):
+                if self.mines[r][c]:
+                    self.adj[r][c] = -1  # or keep as 0 if you prefer
+                else:
+                    count = 0
+                    for rr, cc in self.neighbors(r, c):
+                        if self.mines[rr][cc]:
+                            count += 1
+                    self.adj[r][c] = count
+
     '''
     Functionality: returns whether cell is mine
     Parameters: cell's row and column
@@ -145,3 +164,28 @@ class Board:
                 self.state[rr][cc2] = 'UNCOVERED'
                 if self.adj[rr][cc2] == 0:
                     q.append((rr, cc2))
+ 
+
+    def toggle_flag(self, r, c):
+        if not self.board.in_bounds(r, c):
+            return 'INVALID'
+
+        cell_state = self.board.state[r][c]
+
+        # cannot flag an uncovered cell
+        if cell_state == 'UNCOVERED':
+            return 'INVALID'
+
+        # unflag
+        if cell_state == 'FLAG':
+            self.board.state[r][c] = 'COVERED'
+            self.flags_remaining += 1
+            return 'UNFLAGGED'
+        
+        # place flag
+        if self.flags_remaining == 0:
+            return 'NO_FLAGS'
+
+        self.board.state[r][c] = 'FLAG'
+        self.flags_remaining -= 1
+        return 'FLAGGED'
