@@ -114,43 +114,34 @@ class Board:
                     self.fill_zeroes(r,c)
                 return 'SAFE'
 
-    def fill_zeroes(self,r,c): #ask later if we want minesweeper to uncover the flags or not, now it doesnt
+    def fill_zeroes(self,r,c): 
         """
         Functionality: Uses BFS (queue) to uncover a connected region of tiles with zero mines as neighbors and their border numbers.
         Parameters: cell's row and column
         """
-        # Only expand if the starting cell is actually a zero and not a mine/flag. This is handled in uncover, but to make it more robust
-        if self.state[r][c] == 'FLAG' or self.mines[r][c]:
-            return
-        if self.adj[r][c] != 0:
-            # Not a zero, so just uncover this single cell and stop.
-            self.state[r][c] = 'UNCOVERED'
+        if self.mines[r][c]:
             return
 
-        #Start of the BFS logic
+        if self.state[r][c] != 'UNCOVERED':
+            self.state[r][c] = 'UNCOVERED'
+        #The 2 cases above should be handled by uncover, but I added for more robustness
+
+        # Standard BFS
         q = deque()
         visited = set()
-
-        # Add the starting zero
         q.append((r, c))
         visited.add((r, c))
-        self.state[r][c] = 'UNCOVERED'
 
         while q:
-            r, c = q.popleft()
-
-            # For every neighbor of a zero, uncover it.
-            for rr, cc in self.neighbors(r, c):
-                if (rr, cc) in visited:
+            cr, cc = q.popleft()
+            if self.adj[cr][cc] != 0:
+                continue
+            for rr, cc2 in self.neighbors(cr, cc):
+                if (rr, cc2) in visited:
                     continue
-                if self.state[rr][cc] == 'FLAG':
-                    continue 
-                if self.mines[rr][cc]:
-                    continue  
-
-                visited.add((rr, cc))
-                self.state[rr][cc] = 'UNCOVERED'
-
-                # If neighbor is also zero, keep expanding from it
-                if self.adj[rr][cc] == 0:
-                    q.append((rr, cc))
+                if self.mines[rr][cc2]:
+                    continue
+                visited.add((rr, cc2))
+                self.state[rr][cc2] = 'UNCOVERED'
+                if self.adj[rr][cc2] == 0:
+                    q.append((rr, cc2))
