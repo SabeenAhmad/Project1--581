@@ -6,7 +6,21 @@ class UI:
         self.board = board # Stores a reference to the Board object so board.py can be reached.
 
     def start_screen(self):
-        pass
+        input("=== Welcome to Minesweeper ===\nPress ENTER to start...")
+        self.game_loop() 
+
+    def end_screen(): 
+        # called at the end of render_board()
+        # print game over 
+        # check if the user won or lost by checking game.playing_state
+
+    def render_status(): 
+        # print flags remaining
+        # print total mines in game
+
+    def render_board(): 
+        print("\n--- Game started! ---")
+        # more code to follow...
 
     def ask_for_input(): 
         # loop to continue asking the user for valid input
