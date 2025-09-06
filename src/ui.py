@@ -7,7 +7,7 @@ class UI:
 
     def start_screen(self):
         input("=== Welcome to Minesweeper ===\nPress ENTER to start...")
-        self.game_loop() 
+        self.render_board() 
 
     def end_screen(): 
         # called at the end of render_board()
@@ -15,6 +15,7 @@ class UI:
         # check if the user won or lost by checking game.playing_state
 
     def render_status(): 
+        # called at the beginning of render_board
         # print flags remaining
         # print total mines in game
 
