@@ -167,10 +167,10 @@ class Board:
  
 
     def toggle_flag(self, r, c):
-        if not self.board.in_bounds(r, c):
+        if not self.in_bounds(r, c):
             return 'INVALID'
 
-        cell_state = self.board.state[r][c]
+        cell_state = self.state[r][c]
 
         # cannot flag an uncovered cell
         if cell_state == 'UNCOVERED':
@@ -178,7 +178,7 @@ class Board:
 
         # unflag
         if cell_state == 'FLAG':
-            self.board.state[r][c] = 'COVERED'
+            self.state[r][c] = 'COVERED'
             self.flags_remaining += 1
             return 'UNFLAGGED'
         
@@ -186,6 +186,32 @@ class Board:
         if self.flags_remaining == 0:
             return 'NO_FLAGS'
 
-        self.board.state[r][c] = 'FLAG'
+        self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'
+    
+    def check_status(self):
+        # Lost if any mined cell is uncovered
+        for r in range(self.length):
+            for c in range(self.width):
+                if self.mines[r][c] and self.state[r][c] == "UNCOVERED":
+                    return "LOST"
+            
+        # Count uncovered safe cells
+        uncovered_safe = 0
+        total_safe = self.width * self.length - self.mine_total
+            
+        for r in range(self.length):
+            for c in range(self.width):
+                if not self.mines[r][c] and self.state[r][c] == "UNCOVERED":
+                    uncovered_safe += 1
+            
+        if uncovered_safe == total_safe:
+            return "WON"
+            
+        return "PLAYING"
+    
+
+
+    
+
