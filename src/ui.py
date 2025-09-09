@@ -1,5 +1,5 @@
 # UI file
-
+from board import Board
 class UI: 
     def __init__(self, game, board):
         self.game = game # Stores a reference to the Game object so game.py can be reached.
@@ -9,21 +9,84 @@ class UI:
         input("=== Welcome to Minesweeper ===\nPress ENTER to start...")
         self.render_board() 
 
-    def end_screen(): 
+    def end_screen(self):
+        print("\n=== Game Over ===")
+        if self.game.playing_state == "WON":
+            print("Congratulations, you won!")
+        else:
+            print("💥 You hit a mine. Better luck next time!")
+
+        # reveal full board at the end
+        self.board.print_board("END")
+
+        # ask to play again
+        while True:
+            again = input("\nDo you want to play again? (y/n): ").strip().lower()
+            if again in ("y", "yes"):
+                # reset the game
+                self.game.playing_state = "PLAYING"
+                self.game.board = Board(self.game.board.mine_total)
+                self.board = self.game.board                        # make UI point to it
+                self.start_screen()
+                break
+            elif again in ("n", "no"):
+                print("Thanks for playing Minesweeper! Goodbye!")
+                exit()
+            else:
+                print("Please enter 'y' or 'n'.")
+
         # called at the end of render_board()
         # print game over 
         # check if the user won or lost by checking game.playing_state
 
-    def render_status(): 
+    def render_status(self): 
+        print(f"Flags remaining: {self.board.flags_remaining}")
+        print(f"Total mines: {self.board.mine_total}")
         # called at the beginning of render_board
         # print flags remaining
         # print total mines in game
 
-    def render_board(): 
+    def render_board(self): 
         print("\n--- Game started! ---")
-        # more code to follow...
 
-    def ask_for_input(): 
+        first_move = True
+        while self.game.playing_state == "PLAYING":
+            self.render_status()
+            self.board.print_board("PLAYING")
+
+            # ask player for move
+            action, row, col = self.ask_for_input()
+
+            if action == "reveal":
+                result = self.board.uncover(row, col, first_move)
+                first_move = False
+                if result == "HIT":
+                    self.game.playing_state = "LOST"
+                elif result == "SAFE":
+                    if self.board.check_win():
+                        self.game.playing_state = "WON"
+                elif result == "FLAGGED":
+                    print("That cell is flagged, remove flag first.")
+                elif result == "REVEALED":
+                    print("That cell is already revealed.")
+
+
+            elif action == "flag":
+                result = self.board.toggle_flag(row, col)
+                if result == "FLAGGED":
+                    print(f"Flag placed at {chr(col + 65)}{row + 1}")
+                elif result == "UNFLAGGED":
+                    print(f"Flag removed at {chr(col + 65)}{row + 1}")
+                elif result == "NO_FLAGS":
+                    print("No flags remaining!")
+                elif result == "INVALID":
+                    print("Cannot flag this cell!")
+
+        # when loop ends → game over
+        self.end_screen()
+
+
+    def ask_for_input(self): 
         # loop to continue asking the user for valid input
         while True:
             # asks for user input, case insensitive and removes leading/trailing whitespace
@@ -54,7 +117,7 @@ class UI:
             row = int(position[1:]) - 1
             
             # calls upon in_bounds function from board.py to check input and loop again if input is incorrect
-            if not self.board.in_bounds
+            if not self.board.in_bounds(row, col):
                 print("Invalid input - Out of bounds")
                 continue 
             # if all checks pass, pass along input to render_board()
