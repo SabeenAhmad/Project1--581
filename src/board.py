@@ -28,9 +28,23 @@ class Board:
             print(f"{r+1:>{cell_width}}", end="")  # row label
             for c in range(self.width):
                 if playing_state == 'PLAYING':
-                    ch = "." if self.state[r][c] == "COVERED" else self.state[r][c][0]
+                    if self.state[r][c] == "COVERED":
+                        ch = "."
+                    elif self.state[r][c] == "FLAG":
+                        ch = "F"
+                    elif self.state[r][c] == "UNCOVERED":
+                        if self.is_mine(r, c):
+                            ch = "*"   # should never show during play, but just in case
+                        else:
+                            ch = str(self.adj[r][c]) if self.adj[r][c] > 0 else " "
+                    else:
+                        ch = "?"
                 else:
-                    ch = "."
+                    # end state → reveal everything
+                    if self.mines[r][c]:
+                        ch = "*"
+                    else:
+                        ch = str(self.adj[r][c]) if self.adj[r][c] > 0 else " "
                 print(f"{ch:>{cell_width}}", end="")
             print()
     #Functionality: checks if the cell is within the board
