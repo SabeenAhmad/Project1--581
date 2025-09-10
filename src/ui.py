@@ -20,8 +20,7 @@ class UI:
         # print total mines in game
 
     def render_board(): 
-        print("\n--- Game started! ---")
-        # more code to follow...
+
 
     def ask_for_input(): 
         # loop to continue asking the user for valid input
