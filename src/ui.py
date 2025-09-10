@@ -97,7 +97,6 @@ class UI:
         # when loop ends → game over
         self.end_screen()
 
-
     def ask_for_input(self): 
         # loop to continue asking the user for valid input
         while True:
@@ -135,5 +134,6 @@ class UI:
             # if all checks pass, pass along input to render_board()
             return action, row, col
 
+            # Comment to see if merge conflicts are resolved. 
 
     
