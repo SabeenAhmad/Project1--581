@@ -28,9 +28,23 @@ class Board:
             print(f"{r+1:>{cell_width}}", end="")  # row label
             for c in range(self.width):
                 if playing_state == 'PLAYING':
-                    ch = "." if self.state[r][c] == "COVERED" else self.state[r][c][0]
+                    if self.state[r][c] == "COVERED":
+                        ch = "."
+                    elif self.state[r][c] == "FLAG":
+                        ch = "F"
+                    elif self.state[r][c] == "UNCOVERED":
+                        if self.is_mine(r, c):
+                            ch = "*"   # should never show during play, but just in case
+                        else:
+                            ch = str(self.adj[r][c]) if self.adj[r][c] > 0 else " "
+                    else:
+                        ch = "?"
                 else:
-                    ch = "."
+                    # end state → reveal everything
+                    if self.mines[r][c]:
+                        ch = "*"
+                    else:
+                        ch = str(self.adj[r][c]) if self.adj[r][c] > 0 else " "
                 print(f"{ch:>{cell_width}}", end="")
             print()
     #Functionality: checks if the cell is within the board
@@ -133,6 +147,16 @@ class Board:
                     self.fill_zeroes(r,c)
                 return 'SAFE'
 
+    def check_win(self):
+        """
+        Player wins if all non-mine cells are uncovered.
+        """
+        for r in range(self.length):
+            for c in range(self.width):
+                if not self.mines[r][c] and self.state[r][c] != "UNCOVERED":
+                    return False
+        return True
+
     def fill_zeroes(self,r,c): 
         """
         Functionality: Uses BFS (queue) to uncover a connected region of tiles with zero mines as neighbors and their border numbers.
@@ -167,10 +191,10 @@ class Board:
  
 
     def toggle_flag(self, r, c):
-        if not self.board.in_bounds(r, c):
+        if not self.in_bounds(r, c):
             return 'INVALID'
 
-        cell_state = self.board.state[r][c]
+        cell_state = self.state[r][c]
 
         # cannot flag an uncovered cell
         if cell_state == 'UNCOVERED':
@@ -178,7 +202,7 @@ class Board:
 
         # unflag
         if cell_state == 'FLAG':
-            self.board.state[r][c] = 'COVERED'
+            self.state[r][c] = 'COVERED'
             self.flags_remaining += 1
             return 'UNFLAGGED'
         
@@ -186,6 +210,6 @@ class Board:
         if self.flags_remaining == 0:
             return 'NO_FLAGS'
 
-        self.board.state[r][c] = 'FLAG'
+        self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'

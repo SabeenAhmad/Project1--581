@@ -1,6 +1,10 @@
 from ui import UI
-
 def main():
-    #run = UI()
+    # make game + ui
+    ui = UI()
 
-main()
+    # start game
+    ui.start_screen()
+
+if __name__ == "__main__":
+    main()
