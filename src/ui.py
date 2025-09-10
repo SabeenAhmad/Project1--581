@@ -1,12 +1,24 @@
 # UI file
 from board import Board
+from game import Game
 class UI: 
-    def __init__(self, game, board):
-        self.game = game # Stores a reference to the Game object so game.py can be reached.
-        self.board = board # Stores a reference to the Board object so board.py can be reached.
+    def __init__(self):
+        self.game = None # Stores a reference to the Game object so game.py can be reached.
+        self.board = None # Stores a reference to the Board object so board.py can be reached.
 
     def start_screen(self):
         input("=== Welcome to Minesweeper ===\nPress ENTER to start...")
+        while True:
+            try:
+                mines = int(input("How many mines do you want on the board, must choose between 10-20: "))
+                if mines <= 20 and mines >=10:
+                    break
+                else:
+                    print("invalid mine count")
+            except:
+                print("invalid response")
+        self.game = Game(mines)
+        self.board = self.game.board
         self.render_board() 
 
     def end_screen(self):
