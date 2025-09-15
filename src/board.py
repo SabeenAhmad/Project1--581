@@ -155,7 +155,6 @@ class Board:
                 if self.adj[r][c] == 0:
                     self.fill_zeroes(r,c)
                 return 'SAFE'
-
     def check_win(self):
         """
         Player wins if all non-mine cells are uncovered.
@@ -165,7 +164,7 @@ class Board:
                 if not self.mines[r][c] and self.state[r][c] != "UNCOVERED":
                     return False
         return True
-
+        
     def fill_zeroes(self,r,c): 
         """
         Functionality: Uses BFS (queue) to uncover a connected region of tiles with zero mines as neighbors and their border numbers.
