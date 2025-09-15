@@ -129,22 +129,22 @@ class Board:
     Parameters: cell's row and column, if it is the first move
     '''
     def uncover(self,r,c,first_move):
+        # Always prevent uncovering flagged cells
+        if self.is_flag(r, c):
+            return 'FLAGGED'
         #if it is the first move, need to place mines, compute neighbors, and fill zeroes where needed
         #returns SAFE to tell game that this was a valid move
         if first_move:
-           self.place_mine(r,c)
-           self.compute_numbers()
-           self.state[r][c] = 'UNCOVERED'
-           if self.adj[r][c] == 0:
+            self.place_mine(r,c)
+            self.compute_numbers()
+            self.state[r][c] = 'UNCOVERED'
+            if self.adj[r][c] == 0:
                 self.fill_zeroes(r,c)
-           return 'SAFE'
+            return 'SAFE'
         #if it is not the first move
         else:
-            #if it is a flag, tells Game to ask user to either enter a diff cell or remove flag
-            if self.is_flag(r,c):
-                return 'FLAGGED'
             #if already uncovered, tells Game to ask user to redo
-            elif self.is_uncovered(r,c):
+            if self.is_uncovered(r,c):
                 return 'REVEALED'
             #check if mine, return HIT to tell game to end the game
             elif self.is_mine(r,c):
