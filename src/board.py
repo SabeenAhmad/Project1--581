@@ -14,38 +14,47 @@ class Board:
         self.flags_remaining = mine_total
 
     def print_board(self, playing_state):
-        cell_width = 3  # every column (including headers) takes 3 spaces
+        cell_width = 3 # every column (including headers) takes 3 spaces
 
         # column headers (A–J)
+        print()
         print(" " * cell_width, end="")   # top-left empty corner
         for c in range(self.width):
             col_letter = chr(ord("A") + c)
-            print(f"{col_letter:>{cell_width}}", end="")
+            print(f"{col_letter:>{cell_width}}", end=" ")
         print()
 
         # rows (1–10)
+        print()
         for r in range(self.length):
             print(f"{r+1:>{cell_width}}", end="")  # row label
             for c in range(self.width):
                 if playing_state == 'PLAYING':
                     if self.state[r][c] == "COVERED":
-                        ch = "."
+                        ch = "🟢"
                     elif self.state[r][c] == "FLAG":
-                        ch = "F"
+                        ch = "  ⛳️"
                     elif self.state[r][c] == "UNCOVERED":
                         if self.is_mine(r, c):
-                            ch = "*"   # should never show during play, but just in case
+                            ch = "  💣"   # should never show during play, but just in case
                         else:
-                            ch = str(self.adj[r][c]) if self.adj[r][c] > 0 else " "
+                            if self.adj[r][c] > 0: 
+                                ch = f"  {self.adj[r][c]} "                            
+                            else: 
+                                ch = " 🟤"
                     else:
                         ch = "?"
                 else:
                     # end state → reveal everything
                     if self.mines[r][c]:
-                        ch = "*"
+                        ch = "  💣"
                     else:
-                        ch = str(self.adj[r][c]) if self.adj[r][c] > 0 else " "
+                        if self.adj[r][c] > 0: 
+                            ch = f"  {self.adj[r][c]} "
+                        else:  
+                            ch = " 🟤"
                 print(f"{ch:>{cell_width}}", end="")
+            print()
             print()
     #Functionality: checks if the cell is within the board
     #Parameter: index of the cell

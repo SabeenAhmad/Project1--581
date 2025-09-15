@@ -26,7 +26,7 @@ class UI:
         if self.game.playing_state == "WON":
             print("Congratulations, you won!")
         else:
-            print("💥 You hit a mine. Better luck next time!")
+            print("💣 You hit a mine. Better luck next time!")
 
         # reveal full board at the end
         self.board.print_board("END")
@@ -93,7 +93,6 @@ class UI:
 
         # when loop ends → game over
         self.end_screen()
-
 
     def ask_for_input(self): 
         # loop to continue asking the user for valid input
