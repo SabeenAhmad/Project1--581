@@ -26,7 +26,7 @@ class UI:
         if self.game.playing_state == "WON":
             print("Congratulations, you won!")
         else:
-            print("💥 You hit a mine. Better luck next time!")
+            print("💣 You hit a mine. Better luck next time!")
 
         # reveal full board at the end
         self.board.print_board("END")
@@ -134,6 +134,5 @@ class UI:
             # if all checks pass, pass along input to render_board()
             return action, row, col
 
-            # Comment to see if merge conflicts are resolved. 
 
     
