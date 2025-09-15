@@ -56,6 +56,7 @@ class UI:
         print(f"Flags remaining: {flags_remaining}")
         mine_count = self.board.mine_total - flags_remaining
         print(f"Mine Count: {mine_count}")
+        print(f"Game State: {self.game.playing_state}")
     def render_board(self): 
         print("\n--- Game started! ---")
 
