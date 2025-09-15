@@ -52,11 +52,8 @@ class UI:
         # check if the user won or lost by checking game.playing_state
 
     def render_status(self): 
-        print(f"Flags remaining: {self.board.flags_remaining}")
-        print(f"Total mines: {self.board.mine_total}")
-        # called at the beginning of render_board
-        # print flags remaining
-        # print total mines in game
+        mines_remaining = self.board.flags_remaining
+        print(f"Mines remaining: {mines_remaining}")
 
     def render_board(self): 
         print("\n--- Game started! ---")
