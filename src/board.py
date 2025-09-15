@@ -152,7 +152,7 @@ class Board:
         Functionality: Uses BFS (queue) to uncover a connected region of tiles with zero mines as neighbors and their border numbers.
         Parameters: cell's row and column
         """
-        if self.mines[r][c]:
+        if self.state[r][c] == 'FLAG' or self.mines[r][c]:
             return
 
         if self.state[r][c] != 'UNCOVERED':
@@ -173,6 +173,8 @@ class Board:
                 if (rr, cc2) in visited:
                     continue
                 if self.mines[rr][cc2]:
+                    continue
+                if self.state[rr][cc2] == 'FLAG':
                     continue
                 visited.add((rr, cc2))
                 self.state[rr][cc2] = 'UNCOVERED'
@@ -203,3 +205,4 @@ class Board:
         self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'
+    
