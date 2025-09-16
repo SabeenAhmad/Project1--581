@@ -100,10 +100,14 @@ class UI:
         # loop to continue asking the user for valid input
         while True:
             # asks for user input, case insensitive and removes leading/trailing whitespace
-            user_input = input("\nEnter move (e.g. 'reveal A5' or 'flag B3'): ").strip().lower()
+            user_input = input("\nEnter move (e.g. 'reveal A5' or 'flag B3', or 'quit' to exit): ").strip().lower()
             # if user presses enter on input request, loop to ask again 
             if not user_input:
                 continue
+            # if user wants to quit
+            if user_input == "quit":
+                print("Thanks for playing!")
+                exit()
             # if user's input has too many or too few words, loop to ask again; turn user_input into an array of two elements
             parts = user_input.split()
             if len(parts) != 2:
