@@ -200,6 +200,11 @@ class Board:
  
 
     def toggle_flag(self, r, c):
+        """
+        Functionality: Toggles a flag on a covered cell. If flagged, it unflags; if covered, it flags (unless no flags remain).
+        Parameters: cell's row and column
+        Returns: 'FLAGGED', 'UNFLAGGED', 'INVALID', or 'NO_FLAGS' depending on the action taken
+        """
         if not self.in_bounds(r, c):
             return 'INVALID'
 
@@ -222,4 +227,3 @@ class Board:
         self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'
-    
