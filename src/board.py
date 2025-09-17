@@ -3,6 +3,8 @@ from collections import deque
 
 class Board:
     def __init__ (self, mine_total):
+        # Functionality: Initializes the board with given size, mine count, and default states for cells.
+        # Parameter: mine_total - the total number of mines to be placed on the board.
         self.width = 10
         self.length = 10
         self.mines = [[False]*self.width for _ in range(self.length)]
@@ -13,6 +15,8 @@ class Board:
         self.flags_remaining = mine_total
 
     def print_board(self, playing_state):
+        # Functionality: Prints the current state of the board to the console, showing covered tiles, flags, numbers, or mines.
+        # Parameter: playing_state - indicates whether the game is in progress ('PLAYING') or finished (reveals all cells).
         cell_width = 3 # every column (including headers) takes 3 spaces
 
         # column headers (A–J)
@@ -55,12 +59,17 @@ class Board:
                 print(f"{ch:>{cell_width}}", end="")
             print()
             print()
-    #Functionality: checks if the cell is within the board
-    #Parameter: index of the cell
-    def in_bounds(self, r, c):
-        return 0 <= r < self.length and 0 <= c < self.width #returns True or False
+
+        def in_bounds(self, r, c):
+        # Functionality: Checks if the given cell position is within the dimensions of the board.
+        # Parameters: r (row index), c (column index).
+        # Returns: True if the cell is inside the board, otherwise False.
+            return 0 <= r < self.length and 0 <= c < self.width
 
     def neighbors(self, r, c):
+        # Functionality: Finds all valid neighboring cells around a given cell (up to 8 possible neighbors).
+        # Parameters: r (row index), c (column index).
+        # Returns: A list of (row, column) tuples for all in-bound neighbors.
         nbrs = []
         for dr in (-1, 0, 1):
             for dc in (-1, 0, 1):
@@ -70,6 +79,7 @@ class Board:
                 if self.in_bounds(rr, cc):
                     nbrs.append((rr, cc))
         return nbrs
+
     
     '''
     Functionality: used at the very beginning of the game after the user reveals the first cell
