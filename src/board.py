@@ -12,6 +12,8 @@ class Board:
         self.playing_state = True
         self.flags_remaining = mine_total
         self.mines_initialized = False
+        self.playing_state = "PLAYING"   # can be "PLAYING", "WON", "LOST"
+
 
     def print_board(self, playing_state):
         cell_width = 3 # every column (including headers) takes 3 spaces

@@ -1,9 +1,7 @@
 # UI file
 from board import Board
-from game import Game
 class UI: 
     def __init__(self):
-        self.game = None # Stores a reference to the Game object so game.py can be reached.
         self.board = None # Stores a reference to the Board object so board.py can be reached.
 
     def start_screen(self):
@@ -17,13 +15,12 @@ class UI:
                     print("invalid mine count")
             except:
                 print("invalid response")
-        self.game = Game(mines)
-        self.board = self.game.board
+        self.board = Board(mines)
         self.render_board() 
 
     def end_screen(self):
         print("\n=== Game Over ===")
-        if self.game.playing_state == "WON":
+        if self.board.playing_state == "WON":
             print("Congratulations, you won!")
         else:
             print("💣 You hit a mine. Better luck next time!")
@@ -36,9 +33,8 @@ class UI:
             again = input("\nDo you want to play again? (y/n): ").strip().lower()
             if again in ("y", "yes"):
                 # reset the game
-                self.game.playing_state = "PLAYING"
-                self.game.board = Board(self.game.board.mine_total)
-                self.board = self.game.board                        # make UI point to it
+                self.board.playing_state = "PLAYING"
+                self.board = Board(self.board.mine_total)
                 self.start_screen()
                 break
             elif again in ("n", "no"):
@@ -56,12 +52,12 @@ class UI:
         print(f"Flags remaining: {flags_remaining}")
         mine_count = self.board.mine_total - flags_remaining
         print(f"Mine Count: {mine_count}")
-        print(f"Game State: {self.game.playing_state}")
+        print(f"Game State: {self.board.playing_state}")
     def render_board(self): 
         print("\n--- Game started! ---")
 
         first_move = True
-        while self.game.playing_state == "PLAYING":
+        while self.board.playing_state == "PLAYING":
             self.render_status()
             self.board.print_board("PLAYING")
 
@@ -72,10 +68,10 @@ class UI:
                 result = self.board.uncover(row, col, first_move)
                 first_move = False
                 if result == "HIT":
-                    self.game.playing_state = "LOST"
+                    self.board.playing_state = "LOST"
                 elif result == "SAFE":
                     if self.board.check_win():
-                        self.game.playing_state = "WON"
+                        self.board.playing_state = "WON"
                 elif result == "FLAGGED":
                     print("That cell is flagged, remove flag first.")
                 elif result == "REVEALED":
@@ -124,12 +120,18 @@ class UI:
                 print("Invalid position - Type the letter then the number  like 'A5'")
                 continue
                 
+            #valid volumns
             columns = "ABCDEFGHIJ"
+            if position[0].upper() not in columns:
+                print("Invalid column - use A-J")
+                continue
             # finds the index of the user input row
             col = columns.index(position[0].upper())
-            # grabs the digit from the user input (the first index would be the letter)
-            row = int(position[1:]) - 1
-            
+            row_num = int(position[1:])
+            if not (1 <= row_num <= 10):
+                print("Invalid row - use 1-10")
+                continue
+            row = row_num - 1
             # calls upon in_bounds function from board.py to check input and loop again if input is incorrect
             if not self.board.in_bounds(row, col):
                 print("Invalid input - Out of bounds")
