@@ -28,6 +28,7 @@ class UI:
         # Functionality: Handles game-over flow—prints result, reveals full board, and optionally restarts or exits.
         # Parameters: (none)
         print("\n=== Game Over ===")
+        # Display win/lose message depending on board state
         if self.board.playing_state == "WON":
             print("Congratulations, you won!")
         else:
@@ -70,15 +71,18 @@ class UI:
 
         first_move = True
         while self.board.playing_state == "PLAYING":
+            # Show status info and draw the current board
             self.render_status()
             self.board.print_board("PLAYING")
 
             # ask player for move
             action, row, col = self.ask_for_input()
 
+            # Handle reveal move
             if action == "reveal":
                 result = self.board.uncover(row, col, first_move)
                 first_move = False
+                # Update game state depending on result
                 if result == "HIT":
                     self.board.playing_state = "LOST"
                 elif result == "SAFE":
@@ -89,6 +93,7 @@ class UI:
                 elif result == "REVEALED":
                     print("That cell is already revealed.")
 
+            # Handle flagging move
             elif action == "flag":
                 result = self.board.toggle_flag(row, col)
                 if result == "FLAGGED":
