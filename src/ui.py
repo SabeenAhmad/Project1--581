@@ -5,6 +5,8 @@ class UI:
         self.board = None # Stores a reference to the Board object so board.py can be reached.
 
     def start_screen(self):
+        # Functionality: Displays the welcome screen, prompts for valid mine count, then creates the Game and Board and starts rendering.
+        # Parameters: (none)
         input("=== Welcome to Minesweeper ===\nPress ENTER to start...")
         while True:
             try:
@@ -19,6 +21,8 @@ class UI:
         self.render_board() 
 
     def end_screen(self):
+        # Functionality: Handles game-over flow—prints result, reveals full board, and optionally restarts or exits.
+        # Parameters: (none)
         print("\n=== Game Over ===")
         if self.board.playing_state == "WON":
             print("Congratulations, you won!")
@@ -48,12 +52,16 @@ class UI:
         # check if the user won or lost by checking game.playing_state
 
     def render_status(self): 
+        # Functionality: Shows current game stats such as flags remaining, inferred mine count, and game state.
+        # Parameters: (none)
         flags_remaining = self.board.flags_remaining
         print(f"Flags remaining: {flags_remaining}")
         mine_count = self.board.mine_total - flags_remaining
         print(f"Mine Count: {mine_count}")
         print(f"Game State: {self.board.playing_state}")
     def render_board(self): 
+        # Functionality: Main game loop—renders status and board, accepts moves, updates state, and detects win/loss.
+        # Parameters: (none)
         print("\n--- Game started! ---")
 
         first_move = True
@@ -77,7 +85,6 @@ class UI:
                 elif result == "REVEALED":
                     print("That cell is already revealed.")
 
-
             elif action == "flag":
                 result = self.board.toggle_flag(row, col)
                 if result == "FLAGGED":
@@ -93,6 +100,9 @@ class UI:
         self.end_screen()
 
     def ask_for_input(self): 
+        # Functionality: Validates and parses user input into an action ('reveal'/'flag') and board coordinates.
+        # Returns: (action, row, col) tuple when input is valid.
+        # Parameters: (none)
         # loop to continue asking the user for valid input
         while True:
             # asks for user input, case insensitive and removes leading/trailing whitespace
@@ -138,6 +148,3 @@ class UI:
                 continue 
             # if all checks pass, pass along input to render_board()
             return action, row, col
-
-
-    
