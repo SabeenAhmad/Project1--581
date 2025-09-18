@@ -2,17 +2,22 @@ import random
 from collections import deque
 
 class Board:
-    def __init__ (self, mine_total):
-        # Functionality: Initializes the board with given size, mine count, and default states for cells.
-        # Parameter: mine_total - the total number of mines to be placed on the board.
+    def __init__(self, mine_total):
+        """
+        Functionality: Initializes the board with default dimensions and all data structures
+                    (mine grid, state grid, adjacency counts), plus counters/flags.
+        Parameter: mine_total - total number of mines to be placed on the board.
+        """
         self.width = 10
         self.length = 10
-        self.mines = [[False]*self.width for _ in range(self.length)]
-        self.state   = [["COVERED"]*self.width for _ in range(self.length)]
-        self.adj     = [[0]*self.width for _ in range(self.length)]
+        self.mines = [[False] * self.width for _ in range(self.length)]
+        self.state = [["COVERED"] * self.width for _ in range(self.length)]
+        self.adj   = [[0] * self.width for _ in range(self.length)]
         self.mine_total = mine_total
         self.playing_state = True
         self.flags_remaining = mine_total
+        self.mines_initialized = False
+
 
     def print_board(self, playing_state):
         # Functionality: Prints the current state of the board to the console, showing covered tiles, flags, numbers, or mines.
