@@ -217,6 +217,7 @@ class Board:
                     continue
                 visited.add((rr, cc2))
                 self.state[rr][cc2] = 'UNCOVERED'
+                # keep expanding if neighbor is also zero
                 if self.adj[rr][cc2] == 0:
                     q.append((rr, cc2))
  
