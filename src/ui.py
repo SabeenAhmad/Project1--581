@@ -2,6 +2,7 @@
 from board import Board
 class UI: 
     def __init__(self):
+        # Initialize UI with no board yet — will be set in start_screen()
         self.board = None # Stores a reference to the Board object so board.py can be reached.
 
     def start_screen(self):
@@ -15,9 +16,12 @@ class UI:
                     break
                 else:
                     print("invalid mine count")
+            # Catches anything that isn’t a number
             except:
                 print("invalid response")
+        # Create a Board object with chosen number of mines
         self.board = Board(mines)
+        # Start the game loop
         self.render_board() 
 
     def end_screen(self):
