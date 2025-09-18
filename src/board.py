@@ -11,6 +11,7 @@ class Board:
         self.mine_total = mine_total
         self.playing_state = True
         self.flags_remaining = mine_total
+        self.mines_initialized = False
 
     def print_board(self, playing_state):
         cell_width = 3 # every column (including headers) takes 3 spaces
@@ -97,7 +98,7 @@ class Board:
         for r in range(self.length):
             for c in range(self.width):
                 if self.mines[r][c]:
-                    self.adj[r][c] = -1  # or keep as 0 if you prefer
+                    self.adj[r][c] = -1  
                 else:
                     count = 0
                     for rr, cc in self.neighbors(r, c):
@@ -127,33 +128,39 @@ class Board:
     Functionality: Uncovers the cell, given that it is a valid move(not already uncovered, not a flag)
     Parameters: cell's row and column, if it is the first move
     '''
-    def uncover(self,r,c,first_move):
-        # Always prevent uncovering flagged cells
+    def uncover(self, r, c, first_move):
+    # Always prevent uncovering flagged cells
         if self.is_flag(r, c):
             return 'FLAGGED'
+
+        # initialize mines on first actual uncover
+        if not self.mines_initialized:
+            self.place_mine(r, c)
+            self.compute_numbers()
+            self.mines_initialized = True
+
         #if it is the first move, need to place mines, compute neighbors, and fill zeroes where needed
         #returns SAFE to tell game that this was a valid move
         if first_move:
-            self.place_mine(r,c)
-            self.compute_numbers()
             self.state[r][c] = 'UNCOVERED'
             if self.adj[r][c] == 0:
-                self.fill_zeroes(r,c)
+                self.fill_zeroes(r, c)
             return 'SAFE'
         #if it is not the first move
         else:
             #if already uncovered, tells Game to ask user to redo
-            if self.is_uncovered(r,c):
+            if self.is_uncovered(r, c):
                 return 'REVEALED'
             #check if mine, return HIT to tell game to end the game
-            elif self.is_mine(r,c):
+            elif self.is_mine(r, c):
                 return 'HIT'
             #if it is a valid cell, returns SAFE to tell game this was a valid move
             else:
                 self.state[r][c] = 'UNCOVERED'
                 if self.adj[r][c] == 0:
-                    self.fill_zeroes(r,c)
+                    self.fill_zeroes(r, c)
                 return 'SAFE'
+
     def check_win(self):
         """
         Player wins if all non-mine cells are uncovered.
