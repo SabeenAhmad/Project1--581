@@ -36,6 +36,7 @@ class Board:
             print(f"{r+1:>{cell_width}}", end="")  # row label
             for c in range(self.width):
                 if playing_state == 'PLAYING':
+                    # While playing, covered cells are hidden; flags show; uncovered shows numbers/empties
                     if self.state[r][c] == "COVERED":
                         ch = "🟢"
                     elif self.state[r][c] == "FLAG":
