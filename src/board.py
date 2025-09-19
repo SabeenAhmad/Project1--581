@@ -180,14 +180,17 @@ class Board:
                 return 'SAFE'
 
     def check_win(self):
-        """
-        Player wins if all non-mine cells are uncovered.
-        """
+        # Functionality: Checks if the player has won by verifying all non-mine cells are uncovered.
+        # Parameters: (none) — uses self.mines, self.state, self.length, and self.width.
+        # Returns: True if all safe cells are uncovered; otherwise, False.
         for r in range(self.length):
             for c in range(self.width):
+                # If any safe (non-mine) cell is still not uncovered, it's not a win yet
                 if not self.mines[r][c] and self.state[r][c] != "UNCOVERED":
                     return False
+        # All safe cells are uncovered → win
         return True
+
         
     def fill_zeroes(self,r,c): 
         """
