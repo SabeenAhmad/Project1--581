@@ -210,7 +210,7 @@ class Board:
 
         if self.state[r][c] != 'UNCOVERED':
             self.state[r][c] = 'UNCOVERED'
-        #The 2 cases above should be handled by uncover, but I added for more robustness
+        #The 2 cases above should be handled by uncover but added for more robustness
 
         # Standard BFS
         q = deque()
@@ -218,22 +218,36 @@ class Board:
         q.append((r, c))
         visited.add((r, c))
 
+                # BFS expansion process cells in the queue; only expand outward from zero-adjacent cells
         while q:
+            # Get the next cell to process
             cr, cc = q.popleft()
+
+            # If current cell has a non-zero number, do not expand its neighbors
             if self.adj[cr][cc] != 0:
                 continue
+
+            # Explore all neighbors of this zero cell
             for rr, cc2 in self.neighbors(cr, cc):
+                # Skip if we've already processed this neighbor
                 if (rr, cc2) in visited:
                     continue
+                # Skip if the neighbor is a mine
                 if self.mines[rr][cc2]:
                     continue
+                # Skip if the neighbor is flagged
                 if self.state[rr][cc2] == 'FLAG':
                     continue
+
+                # Mark neighbor as discovered and uncover it
                 visited.add((rr, cc2))
                 self.state[rr][cc2] = 'UNCOVERED'
+
                 # keep expanding if neighbor is also zero
+                # If neighbor has zero adjacent mines, enqueue it to continue the flood fill
                 if self.adj[rr][cc2] == 0:
                     q.append((rr, cc2))
+
  
 
     def toggle_flag(self, r, c):
