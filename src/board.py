@@ -80,11 +80,14 @@ class Board:
         for dr in (-1, 0, 1):
             for dc in (-1, 0, 1):
                 if dr == 0 and dc == 0:
+                    # Skip the center cell itself
                     continue
                 rr, cc = r + dr, c + dc
                 if self.in_bounds(rr, cc):
+                    # Only include neighbors that are inside the board
                     nbrs.append((rr, cc))
         return nbrs
+
 
     
     '''
