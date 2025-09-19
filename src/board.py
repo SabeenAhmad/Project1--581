@@ -22,7 +22,7 @@ class Board:
     def print_board(self, playing_state):
         # Functionality: Prints the current state of the board to the console, showing covered tiles, flags, numbers, or mines.
         # Parameter: playing_state - indicates whether the game is in progress ('PLAYING') or finished (reveals all cells).
-        cell_width = 3 # every column (including headers) takes 3 spaces
+        cell_width = 3
 
         # column headers (A–J)
         print()
@@ -38,10 +38,11 @@ class Board:
             print(f"{r+1:>{cell_width}}", end="")  # row label
             for c in range(self.width):
                 if playing_state == 'PLAYING':
+                    # While playing, covered cells are hidden, flags show, uncovered shows numbers/empties
                     if self.state[r][c] == "COVERED":
-                        ch = "🟢"
+                        ch = "🟢" # covered tile
                     elif self.state[r][c] == "FLAG":
-                        ch = "  ⛳️"
+                        ch = "  ⛳️" # flagged tile
                     elif self.state[r][c] == "UNCOVERED":
                         if self.is_mine(r, c):
                             ch = "  💣"   # should never show during play, but just in case
@@ -65,11 +66,11 @@ class Board:
             print()
             print()
 
-        def in_bounds(self, r, c):
-        # Functionality: Checks if the given cell position is within the dimensions of the board.
-        # Parameters: r (row index), c (column index).
-        # Returns: True if the cell is inside the board, otherwise False.
-            return 0 <= r < self.length and 0 <= c < self.width
+    def in_bounds(self, r, c):
+    # Functionality: Checks if the given cell position is within the dimensions of the board.
+    # Parameters: r (row index), c (column index).
+    # Returns: True if the cell is inside the board, otherwise False.
+        return 0 <= r < self.length and 0 <= c < self.width
 
     def neighbors(self, r, c):
         # Functionality: Finds all valid neighboring cells around a given cell (up to 8 possible neighbors).
@@ -90,7 +91,7 @@ class Board:
     Functionality: used at the very beginning of the game after the user reveals the first cell
     places the mines not in the first cell and its neighbors
     
-    Parameters: takes in the index of the user's first move, r,c, how many mines the user wants on the board
+    Parameters: user_r, user_c (row/col of the first click), uses self.mine_total
     '''
     def place_mine(self,user_r, user_c ):
         mine_count = self.mine_total
@@ -99,10 +100,11 @@ class Board:
         while(mine_count > 0):
             r = random.randint(0,9)
             c = random.randint(0,9)
-            if(self.mines[r][c] == False and (r,c) not in excluded_cells): #checking that index isn't already mine and not user's first move
+            # make sure cell isn’t excluded and isn’t already a mine
+            if(self.mines[r][c] == False and (r,c) not in excluded_cells): 
                 self.mines[r][c] = True
                 mine_count-=1
-            else: #if it is user's first move or already a mine
+            else:
                 continue
     """
     Compute numbers for all cells based on adjacent mines.
@@ -112,7 +114,7 @@ class Board:
         for r in range(self.length):
             for c in range(self.width):
                 if self.mines[r][c]:
-                    self.adj[r][c] = -1  # or keep as 0 if you prefer
+                    self.adj[r][c] = -1  
                 else:
                     count = 0
                     for rr, cc in self.neighbors(r, c):
@@ -125,50 +127,58 @@ class Board:
     Parameters: cell's row and column
     '''
     def is_mine(self,r,c):
+        # check if cell has a mine
         return self.mines[r][c] == True
         '''
     Functionality: returns whether cell is flag
     Parameters: cell's row and column
     '''
     def is_flag(self,r,c):
+        # check if cell is flagged
         return self.state[r][c] == 'FLAG'
         '''
     Functionality: returns whether cell is already uncovered
     Parameters: cell's row and column
     '''
     def is_uncovered(self,r,c):
+        # check if cell is uncovered
         return self.state[r][c] == 'UNCOVERED'
     '''
     Functionality: Uncovers the cell, given that it is a valid move(not already uncovered, not a flag)
     Parameters: cell's row and column, if it is the first move
     '''
-    def uncover(self,r,c,first_move):
-        # Always prevent uncovering flagged cells
+    def uncover(self, r, c, first_move):
+    # Always prevent uncovering flagged cells
         if self.is_flag(r, c):
             return 'FLAGGED'
-        #if it is the first move, need to place mines, compute neighbors, and fill zeroes where needed
-        #returns SAFE to tell game that this was a valid move
-        if first_move:
-            self.place_mine(r,c)
+
+        # initialize mines on first actual uncover
+        if not self.mines_initialized:
+            self.place_mine(r, c)
             self.compute_numbers()
+            self.mines_initialized = True
+
+        #ifirst move, mines were just placed excluding (r,c); uncover & expand zeros if needed
+        if first_move:
             self.state[r][c] = 'UNCOVERED'
             if self.adj[r][c] == 0:
-                self.fill_zeroes(r,c)
+                self.fill_zeroes(r, c)
             return 'SAFE'
         #if it is not the first move
         else:
             #if already uncovered, tells Game to ask user to redo
-            if self.is_uncovered(r,c):
+            if self.is_uncovered(r, c):
                 return 'REVEALED'
             #check if mine, return HIT to tell game to end the game
-            elif self.is_mine(r,c):
+            elif self.is_mine(r, c):
                 return 'HIT'
             #if it is a valid cell, returns SAFE to tell game this was a valid move
             else:
                 self.state[r][c] = 'UNCOVERED'
                 if self.adj[r][c] == 0:
-                    self.fill_zeroes(r,c)
+                    self.fill_zeroes(r, c)
                 return 'SAFE'
+
     def check_win(self):
         """
         Player wins if all non-mine cells are uncovered.
@@ -210,6 +220,7 @@ class Board:
                     continue
                 visited.add((rr, cc2))
                 self.state[rr][cc2] = 'UNCOVERED'
+                # keep expanding if neighbor is also zero
                 if self.adj[rr][cc2] == 0:
                     q.append((rr, cc2))
  
