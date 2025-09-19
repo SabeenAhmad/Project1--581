@@ -114,13 +114,17 @@ class Board:
         for r in range(self.length):
             for c in range(self.width):
                 if self.mines[r][c]:
+                    # Mark mine cells distinctly
                     self.adj[r][c] = -1  
                 else:
+                    # Count mines among neighbors
                     count = 0
                     for rr, cc in self.neighbors(r, c):
                         if self.mines[rr][cc]:
                             count += 1
+                    # Store adjacent mine count for this safe cell
                     self.adj[r][c] = count
+
 
     '''
     Functionality: returns whether cell is mine
