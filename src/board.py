@@ -96,19 +96,20 @@ class Board:
     
     Parameters: user_r, user_c (row/col of the first click), uses self.mine_total
     '''
-    def place_mine(self,user_r, user_c ):
+    def place_mine(self, user_r, user_c):
         mine_count = self.mine_total
-        excluded_cells = self.neighbors(user_r,user_c)
-        excluded_cells.append((user_r,user_c))
-        while(mine_count > 0):
-            r = random.randint(0,9)
-            c = random.randint(0,9)
+        excluded_cells = self.neighbors(user_r, user_c)  # cells around the first click
+        excluded_cells.append((user_r, user_c))          # also exclude the first-click cell itself
+        while (mine_count > 0):
+            r = random.randint(0, 9)  # random row in 0–9 (10x10 board)
+            c = random.randint(0, 9)  # random col in 0–9 (10x10 board)
             # make sure cell isn’t excluded and isn’t already a mine
-            if(self.mines[r][c] == False and (r,c) not in excluded_cells): 
+            if (self.mines[r][c] == False and (r, c) not in excluded_cells):
                 self.mines[r][c] = True
-                mine_count-=1
+                mine_count -= 1
             else:
                 continue
+
     """
     Compute numbers for all cells based on adjacent mines.
     Updates self.adj so self.adj[r][c] = number of surrounding mines.
