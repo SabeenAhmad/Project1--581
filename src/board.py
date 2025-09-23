@@ -250,4 +250,15 @@ class Board:
         self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'
-# print("test")
+    """
+    Functionality: This will iterate through the board and find the first cell that is covered and a 0 safe cell.
+    It will return this as the hint.
+    Parameters: N/A.
+    """
+    def generate_hint(self):
+        columns = "ABCDEFGHIJ"
+        for r in range(self.length):
+            for c in range(self.length):
+                if self.state[r][c] == "COVERED" and self.adj[r][c] == 0:
+                    print(f"Your Hint: A Safe Cell is Located in {columns[c]}{r+1}")
+                    return
