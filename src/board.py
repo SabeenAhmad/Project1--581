@@ -7,8 +7,8 @@ class Board:
         self.width = 10
         self.length = 10
         self.mines = [[False]*self.width for _ in range(self.length)]
-        self.state   = [["COVERED"]*self.width for _ in range(self.length)]
-        self.adj     = [[0]*self.width for _ in range(self.length)]
+        self.state   = [["COVERED"]*self.width for _ in range(self.length)] # COVERED, FLAG, UNCOVERED
+        self.adj     = [[0]*self.width for _ in range(self.length)] # cell number
         self.mine_total = mine_total
         self.playing_state = True
         self.flags_remaining = mine_total
@@ -126,20 +126,27 @@ class Board:
     def is_mine(self,r,c):
         # check if cell has a mine
         return self.mines[r][c] == True
-        '''
+    '''
     Functionality: returns whether cell is flag
     Parameters: cell's row and column
     '''
     def is_flag(self,r,c):
         # check if cell is flagged
         return self.state[r][c] == 'FLAG'
-        '''
+    '''
     Functionality: returns whether cell is already uncovered
     Parameters: cell's row and column
     '''
     def is_uncovered(self,r,c):
         # check if cell is uncovered
         return self.state[r][c] == 'UNCOVERED'
+    '''
+    Functionality: returns whether cell is already covered
+    Parameters: cell's row and column
+    '''
+    def is_covered(self,r,c):
+        # check if cell is covered
+        return self.state[r][c] == 'COVERED'
     '''
     Functionality: Uncovers the cell, given that it is a valid move(not already uncovered, not a flag)
     Parameters: cell's row and column, if it is the first move
@@ -250,6 +257,25 @@ class Board:
         self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'
+
+    """
+    Functionality: The AI randomly selects an covered cell (not flagged) and uncovers it for the user.
+    Parameters: N/A
+    """
+    def easy_ai_mode(self):
+        uncovered_cells = [] # List of all covered cells to select from
+        for r in range(self.length):
+            for c in range(self.width):
+                if self.is_covered(r, c):
+                    # Iterates through all cells and adds the ones that are covered
+                    uncovered_cells.append((r, c))
+
+        cell_index = random.randomint(0, len(uncovered_cells)) # Randomly selects a cell to uncover
+        selected_r = uncovered_cells[cell_index][0]
+        selected_c = uncovered_cells[cell_index][1]
+
+        return self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
+    
     """
     Functionality: This will iterate through the board and find the first cell that is covered and a 0 safe cell.
     It will return this as the hint.
