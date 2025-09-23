@@ -3,6 +3,7 @@ from board import Board
 class UI: 
     def __init__(self):
         self.board = None # Stores a reference to the Board object so board.py can be reached.
+        self.hint = 2
 
     def start_screen(self):
         # Functionality: Displays the welcome screen, prompts for valid mine count, then creates the Game and Board and starts rendering.
@@ -105,8 +106,9 @@ class UI:
         # Parameters: (none)
         # loop to continue asking the user for valid input
         while True:
+            hint_flag = False # This is turned to true whenever the user wants a hint.
             # asks for user input, case insensitive and removes leading/trailing whitespace
-            user_input = input("\nEnter move (e.g. 'reveal A5' or 'flag B3', or 'quit' to exit): ").strip().lower()
+            user_input = input("\nEnter move (e.g. 'reveal A5' or 'flag B3', 'hint', or 'quit' to exit): ").strip().lower()
             # if user presses enter on input request, loop to ask again 
             if not user_input:
                 continue
@@ -114,37 +116,46 @@ class UI:
             if user_input == "quit":
                 print("Thanks for playing!")
                 exit()
+            if user_input == "hint":
+                hint_flag = True
+                if (self.hint > 0):
+                # They only get two hints so reduce the hint count by 1.
+                    self.hint -=1
+                    self.board.generate_hint()
+                else:
+                    print("You ran out of hints")
             # if user's input has too many or too few words, loop to ask again; turn user_input into an array of two elements
-            parts = user_input.split()
-            if len(parts) != 2:
-                print("Invalid input - Type 'reveal A5' or 'flag B3'")
-                continue
-            # split up the array parts where the first index is called action and the second is position
-            action, position = parts
-            # if invalid user input, loop to ask again
-            if action not in ("reveal", "flag"):
-                print("Invalid action -  Use 'reveal' or 'flag'")
-                continue
-            # if the specified position doesn't begin with a letter and conclude with a digit, loop to ask again 
-            if not (len(position) >= 2 and position[0].isalpha() and position[1:].isdigit()):
-                print("Invalid position - Type the letter then the number  like 'A5'")
-                continue
-                
-            #valid volumns
-            columns = "ABCDEFGHIJ"
-            if position[0].upper() not in columns:
-                print("Invalid column - use A-J")
-                continue
-            # finds the index of the user input row
-            col = columns.index(position[0].upper())
-            row_num = int(position[1:])
-            if not (1 <= row_num <= 10):
-                print("Invalid row - use 1-10")
-                continue
-            row = row_num - 1
-            # calls upon in_bounds function from board.py to check input and loop again if input is incorrect
-            if not self.board.in_bounds(row, col):
-                print("Invalid input - Out of bounds")
-                continue 
-            # if all checks pass, pass along input to render_board()
-            return action, row, col
+            if hint_flag == False:
+                parts = user_input.split()
+                if len(parts) != 2:
+                    print("Invalid input - Type 'reveal A5' or 'flag B3'")
+                    continue
+                # split up the array parts where the first index is called action and the second is position
+                action, position = parts
+                # if invalid user input, loop to ask again
+                if action not in ("reveal", "flag", "hint"):
+                    print("Invalid action -  Use 'reveal' or 'flag' or 'hint'")
+                    continue
+                # if the specified position doesn't begin with a letter and conclude with a digit, loop to ask again 
+                if not (len(position) >= 2 and position[0].isalpha() and position[1:].isdigit()):
+                    print("Invalid position - Type the letter then the number  like 'A5'")
+                    continue
+                    
+                #valid volumns
+                columns = "ABCDEFGHIJ"
+                if position[0].upper() not in columns:
+                    print("Invalid column - use A-J")
+                    continue
+                # finds the index of the user input row
+                col = columns.index(position[0].upper())
+                row_num = int(position[1:])
+                if not (1 <= row_num <= 10):
+                    print("Invalid row - use 1-10")
+                    continue
+                row = row_num - 1
+                # calls upon in_bounds function from board.py to check input and loop again if input is incorrect
+                if not self.board.in_bounds(row, col):
+                    print("Invalid input - Out of bounds")
+                    continue 
+                # if all checks pass, pass along input to render_board()
+                return action, row, col
