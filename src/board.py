@@ -250,3 +250,10 @@ class Board:
         self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'
+    def generate_hint(self):
+            columns = "ABCDEFGHIJ"
+            for r in range(self.length):
+                for c in range(self.length):
+                    if self.state[r][c] == "COVERED" and self.adj[r][c] == 0:
+                        print(f"Your Hint: A Safe Cell is Located in {columns[c]}{r+1}")
+                        return
