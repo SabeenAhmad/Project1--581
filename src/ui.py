@@ -3,6 +3,7 @@ from board import Board
 class UI: 
     def __init__(self):
         self.board = None # Stores a reference to the Board object so board.py can be reached.
+        self.hint = 2
 
     def start_screen(self):
         # Functionality: Displays the welcome screen, prompts for valid mine count, then creates the Game and Board and starts rendering.
@@ -58,6 +59,7 @@ class UI:
         print(f"Flags remaining: {flags_remaining}")
         mine_count = self.board.mine_total - flags_remaining
         print(f"Mine Count: {mine_count}")
+        print(f"Hint Count: {self.hint}")
         print(f"Game State: {self.board.playing_state}")
     def render_board(self): 
         # Functionality: Main game loop—renders status and board, accepts moves, updates state, and detects win/loss.
@@ -106,7 +108,7 @@ class UI:
         # loop to continue asking the user for valid input
         while True:
             # asks for user input, case insensitive and removes leading/trailing whitespace
-            user_input = input("\nEnter move (e.g. 'reveal A5' or 'flag B3', or 'quit' to exit): ").strip().lower()
+            user_input = input("\nEnter move (e.g. 'reveal A5' or 'flag B3', 'hint', or 'quit' to exit): ").strip().lower()
             # if user presses enter on input request, loop to ask again 
             if not user_input:
                 continue
@@ -114,15 +116,22 @@ class UI:
             if user_input == "quit":
                 print("Thanks for playing!")
                 exit()
+            if user_input == "hint":
+                if (self.hint > 0):
+                    # They only get two hints so reduce the hint count by 1.
+                    self.hint -=1
+                    self.board.generate_hint()
+                else:
+                    print("You ran out of hints")
             # if user's input has too many or too few words, loop to ask again; turn user_input into an array of two elements
             parts = user_input.split()
-            if len(parts) != 2:
+            if (len(parts) != 2 and user_input != "hint"):
                 print("Invalid input - Type 'reveal A5' or 'flag B3'")
                 continue
             # split up the array parts where the first index is called action and the second is position
             action, position = parts
             # if invalid user input, loop to ask again
-            if action not in ("reveal", "flag"):
+            if action not in ("reveal", "flag", "hint"):
                 print("Invalid action -  Use 'reveal' or 'flag'")
                 continue
             # if the specified position doesn't begin with a letter and conclude with a digit, loop to ask again 
