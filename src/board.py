@@ -255,4 +255,4 @@ class Board:
         for r in range(self.length):
             for c in range(self.width):
                 if not self.is_mine(r,c) and self.state[r][c] == "COVERED":
-                    return [r,c]
+                    return self.uncover(r,c,False)
