@@ -3,7 +3,7 @@ from board import Board
 class UI: 
     def __init__(self):
         self.board = None # Stores a reference to the Board object so board.py can be reached.
-        self.hint = 2
+        self.hint = 2 # The amount of hints left for the user in the game.
 
     def start_screen(self):
         # Functionality: Displays the welcome screen, prompts for valid mine count, then creates the Game and Board and starts rendering.
@@ -117,13 +117,13 @@ class UI:
                 print("Thanks for playing!")
                 exit()
             if user_input == "hint":
-                hint_flag = True
-                if (self.hint > 0):
-                # They only get two hints so reduce the hint count by 1.
-                    self.hint -=1
-                    self.board.generate_hint()
+                hint_flag = True # If it is a hint, then make the flag become True.
+                if (self.hint > 0): # Only give a hint if the user has any hints left.
+                    # They only get two hints so reduce the hint count by 1.
+                    self.hint -=1 # Subtract one hint count from the user.
+                    self.board.generate_hint() # Generate the hint for the user.
                 else:
-                    print("You ran out of hints")
+                    print("You ran out of hints") # If they do not have any hints left, print as such.
             # if user's input has too many or too few words, loop to ask again; turn user_input into an array of two elements
             if hint_flag == False:
                 parts = user_input.split()

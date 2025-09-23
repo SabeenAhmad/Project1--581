@@ -250,6 +250,11 @@ class Board:
         self.state[r][c] = 'FLAG'
         self.flags_remaining -= 1
         return 'FLAGGED'
+    """
+    Functionality: This will iterate through the board and find the first cell that is covered and a 0 safe cell.
+    It will return this as the hint.
+    Parameters: N/A.
+    """
     def generate_hint(self):
         columns = "ABCDEFGHIJ"
         for r in range(self.length):
