@@ -274,4 +274,17 @@ class Board:
         selected_r = uncovered_cells[cell_index][0]
         selected_c = uncovered_cells[cell_index][1]
 
-        return self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell
+        return self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
+    
+    """
+    Functionality: This will iterate through the board and find the first cell that is covered and a 0 safe cell.
+    It will return this as the hint.
+    Parameters: N/A.
+    """
+    def generate_hint(self):
+        columns = "ABCDEFGHIJ"
+        for r in range(self.length):
+            for c in range(self.length):
+                if self.state[r][c] == "COVERED" and self.adj[r][c] == 0:
+                    print(f"Your Hint: A Safe Cell is Located in {columns[c]}{r+1}")
+                    return
