@@ -59,6 +59,7 @@ class UI:
         print(f"Flags remaining: {flags_remaining}")
         mine_count = self.board.mine_total - flags_remaining
         print(f"Mine Count: {mine_count}")
+        print(f"Hints Left: {self.hint}")
         print(f"Game State: {self.board.playing_state}")
     def render_board(self): 
         # Functionality: Main game loop—renders status and board, accepts moves, updates state, and detects win/loss.

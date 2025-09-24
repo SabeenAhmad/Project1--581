@@ -283,8 +283,10 @@ class Board:
     """
     def generate_hint(self):
         columns = "ABCDEFGHIJ"
+        all_safe_cells = []
         for r in range(self.length):
             for c in range(self.length):
-                if self.state[r][c] == "COVERED" and self.adj[r][c] == 0:
-                    print(f"Your Hint: A Safe Cell is Located in {columns[c]}{r+1}")
-                    return
+                if self.is_uncovered(r,c) == False and self.adj[r][c] == 0:
+                    all_safe_cells.append((r+1, columns[c]))
+        rand_safe_cell = random.choice(all_safe_cells)
+        print(f"Your Hint: A Safe Cell is Located in {rand_safe_cell[1]}{rand_safe_cell[0]}")
