@@ -161,6 +161,8 @@ class Board:
             self.place_mine(r, c)
             self.compute_numbers()
             self.mines_initialized = True
+            print("\nBoard Key:") 
+            self.print_board("END") #prints board key after first reveal
 
         #ifirst move, mines were just placed excluding (r,c); uncover & expand zeros if needed
         if first_move:
