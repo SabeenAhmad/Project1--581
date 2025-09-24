@@ -2,7 +2,7 @@ import random
 from collections import deque
 
 class Board:
-    def __init__ (self, mine_total):
+    def __init__ (self, mine_total, difficulty):
         # Functionality: Initializes the board with given size, mine count, and default states for cells.
         self.width = 10
         self.length = 10
@@ -14,6 +14,7 @@ class Board:
         self.flags_remaining = mine_total
         self.mines_initialized = False
         self.playing_state = "PLAYING"   # can be "PLAYING", "WON", "LOST"
+        self.difficulty = difficulty # can be "EASY", "MEDIUM", "HARD"
 
 
     def print_board(self, playing_state):
@@ -264,19 +265,46 @@ class Board:
     Functionality: The AI randomly selects an covered cell (not flagged) and uncovers it for the user.
     Parameters: N/A
     """
+    # def easy_ai_mode(self):
+    #     uncovered_cells = [] # List of all covered cells to select from
+    #     for r in range(self.length):
+    #         for c in range(self.width):
+    #             if self.is_covered(r, c):
+    #                 # Iterates through all cells and adds the ones that are covered
+    #                 uncovered_cells.append((r, c))
     def easy_ai_mode(self):
         uncovered_cells = [] # List of all covered cells to select from
         for r in range(self.length):
             for c in range(self.width):
                 if self.is_covered(r, c):
-                    # Iterates through all cells and adds the ones that are covered
+                    # Iterates through all cells and adds the ones that are covered and not flagged
                     uncovered_cells.append((r, c))
+        
+        # Check if there are any uncovered cells left
+        if not uncovered_cells:
+            return "NO_MOVES"
 
-        cell_index = random.randomint(0, len(uncovered_cells)) # Randomly selects a cell to uncover
+        cell_index = random.randint(0, len(uncovered_cells)) # Randomly selects a cell to uncover
         selected_r = uncovered_cells[cell_index][0]
         selected_c = uncovered_cells[cell_index][1]
 
         return self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
+    
+    """
+    Functionality: Placeholder for Medium AI code.
+    Parameters: N/A
+    """
+    def medium_ai_mode(self):
+        print("Medium AI Mode Selected - Not Yet Implemented")
+        return "NO_MOVES"
+    
+    """
+    Functionality: Placeholder for Hard AI code.
+    parameters: N/A
+    """
+    def hard_ai_mode(self):
+        print("Hard AI Mode Selected - Not Yet Implemented")
+        return "NO_MOVES"
     
     """
     Functionality: This will iterate through the board and find the first cell that is covered and a 0 safe cell.
