@@ -18,7 +18,15 @@ class UI:
                     print("invalid mine count")
             except:
                 print("invalid response")
-        self.board = Board(mines)
+        # Prompts for difficulty level until valid input is received
+        while True:
+            difficulty = input("Choose difficulty (easy, medium, hard): ").strip().lower()
+            if difficulty in ["easy", "medium", "hard"]:
+                break
+            else:
+                print("Invalid difficulty - choose 'easy', 'medium', or 'hard'")
+
+        self.board = Board(mines, difficulty)
         self.render_board() 
 
     def end_screen(self):
@@ -28,7 +36,7 @@ class UI:
         if self.board.playing_state == "WON":
             print("Congratulations, you won!")
         else:
-            print("💣 You hit a mine. Better luck next time!")
+            print("💣 A mine was hit. Better luck next time!")
 
         # reveal full board at the end
         self.board.print_board("END")
@@ -39,7 +47,8 @@ class UI:
             if again in ("y", "yes"):
                 # reset the game
                 self.board.playing_state = "PLAYING"
-                self.board = Board(self.board.mine_total)
+                # create a new board with the same settings
+                self.board = Board(self.board.mine_total, self.board.difficulty) 
                 self.start_screen()
                 break
             elif again in ("n", "no"):
@@ -61,6 +70,9 @@ class UI:
         print(f"Mine Count: {mine_count}")
         print(f"Hints Left: {self.hint}")
         print(f"Game State: {self.board.playing_state}")
+        # Displays the current difficulty level
+        print(f"Current Difficulty: {self.board.difficulty.upper()}")
+
     def render_board(self): 
         # Functionality: Main game loop—renders status and board, accepts moves, updates state, and detects win/loss.
         # Parameters: (none)
@@ -74,7 +86,23 @@ class UI:
             # ask player for move
             action, row, col = self.ask_for_input()
 
-            if action == "reveal":
+            """
+            Handle the AI and Player's moves
+            """
+            if action == "ai":
+                result = self.make_ai_move()
+                first_move = False
+                if result == "HIT":
+                    self.board.playing_state = "LOST"
+                    #print("AI hit a mine!")
+                elif result == "SAFE":
+                    print("AI uncovered a cell")
+                elif result == "NO_MOVES":
+                    print("AI has no moves left!")
+                if self.board.check_win():
+                    self.board.playing_state = "WON"
+
+            elif action == "reveal":
                 result = self.board.uncover(row, col, first_move)
                 first_move = False
                 if result == "HIT":
@@ -117,6 +145,11 @@ class UI:
             if user_input == "quit":
                 print("Thanks for playing!")
                 exit()
+
+            # if user wants the AI to make a move
+            if user_input == "ai":
+                return "ai", -1, -1
+
             if user_input == "hint":
                 hint_flag = True # If it is a hint, then make the flag become True.
                 if (self.hint > 0): # Only give a hint if the user has any hints left.
@@ -125,6 +158,7 @@ class UI:
                     self.board.generate_hint() # Generate the hint for the user.
                 else:
                     print("You ran out of hints") # If they do not have any hints left, print as such.
+            
             # if user's input has too many or too few words, loop to ask again; turn user_input into an array of two elements
             if hint_flag == False:
                 parts = user_input.split()
@@ -160,3 +194,14 @@ class UI:
                     continue 
                 # if all checks pass, pass along input to render_board()
                 return action, row, col
+    
+    """
+    Based on the difficulty, call the appropriate AI function from board.py
+    """
+    def make_ai_move(self):
+        if self.board.difficulty == "easy":
+            return self.board.easy_ai_mode()
+        elif self.board.difficulty == "medium":
+            return self.board.medium_ai_mode()
+        elif self.board.difficulty == "hard":
+            return self.board.hard_ai_mode()
