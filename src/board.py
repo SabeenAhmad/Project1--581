@@ -265,7 +265,6 @@ class Board:
     Parameters: N/A
     """
     def easy_ai_mode(self):
-        columns = "ABCDEFGHIJ" # All the possible columns to index from.
         uncovered_cells = [] # List of all covered cells to select from
         for r in range(self.length):
             for c in range(self.width):
@@ -280,8 +279,7 @@ class Board:
         cell_index = random.randint(0, len(uncovered_cells)) # Randomly selects a cell to uncover
         selected_r = uncovered_cells[cell_index][0]
         selected_c = uncovered_cells[cell_index][1]
-        print(f"AI's Move: Reveal {columns[selected_c]}{selected_r+1}")
-        return self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
+        return selected_r, selected_c, self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
     
     """
     Functionality: Placeholder for Medium AI code.

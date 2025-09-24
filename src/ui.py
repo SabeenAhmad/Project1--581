@@ -97,6 +97,7 @@ class UI:
         #     self.render_status()
         #     self.board.print_board("PLAYING")
 
+        columns = "ABCDEFGHIJ" # All the possible columns to index from.
         first_move = True
         show_start = True
         while self.board.playing_state == "PLAYING":
@@ -135,13 +136,14 @@ class UI:
             if self.board.playing_state != "PLAYING":
                 break
             self.render_status()
-            print("\n-- Board after your move--")
+            print("\n-- Board after your move --")
             self.board.print_board("PLAYING")
 
             # AI's turn after player's move
             if action in ["reveal","flag"] and self.difficulty is not None:
                 print("\n-- AI's turn --")
-                ai_result = self.make_ai_move()
+                r, c, ai_result = self.make_ai_move()
+                print(f"AI's Move: Reveal {columns[c]}{r+1}")
                 if ai_result == "HIT":
                     self.board.playing_state = "LOST"
                     print("💣 AI hit a mine!")
