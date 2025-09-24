@@ -263,12 +263,19 @@ class Board:
     Functionality: The AI randomly selects an covered cell (not flagged) and uncovers it for the user.
     Parameters: N/A
     """
+    # def easy_ai_mode(self):
+    #     uncovered_cells = [] # List of all covered cells to select from
+    #     for r in range(self.length):
+    #         for c in range(self.width):
+    #             if self.is_covered(r, c):
+    #                 # Iterates through all cells and adds the ones that are covered
+    #                 uncovered_cells.append((r, c))
     def easy_ai_mode(self):
         uncovered_cells = [] # List of all covered cells to select from
         for r in range(self.length):
             for c in range(self.width):
                 if self.is_covered(r, c):
-                    # Iterates through all cells and adds the ones that are covered
+                    # Iterates through all cells and adds the ones that are covered and not flagged
                     uncovered_cells.append((r, c))
         
         # Check if there are any uncovered cells left

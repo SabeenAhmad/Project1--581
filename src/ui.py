@@ -78,31 +78,22 @@ class UI:
         # Parameters: (none)
         print("\n--- Game started! ---")
 
+        # first_move = True
+        # while self.board.playing_state == "PLAYING":
+        #     self.render_status()
+        #     self.board.print_board("PLAYING")
+
         first_move = True
+        show_start = True
         while self.board.playing_state == "PLAYING":
-            self.render_status()
-            self.board.print_board("PLAYING")
+            if show_start:
+                self.render_status()
+                self.board.print_board("PLAYING")
 
             # ask player for move
             action, row, col = self.ask_for_input()
 
-            """
-            Handle the AI and Player's moves
-            """
-            if action == "ai":
-                result = self.make_ai_move()
-                first_move = False
-                if result == "HIT":
-                    self.board.playing_state = "LOST"
-                    #print("AI hit a mine!")
-                elif result == "SAFE":
-                    print("AI uncovered a cell")
-                elif result == "NO_MOVES":
-                    print("AI has no moves left!")
-                if self.board.check_win():
-                    self.board.playing_state = "WON"
-
-            elif action == "reveal":
+            if action == "reveal":
                 result = self.board.uncover(row, col, first_move)
                 first_move = False
                 if result == "HIT":
@@ -125,6 +116,37 @@ class UI:
                     print("No flags remaining!")
                 elif result == "INVALID":
                     print("Cannot flag this cell!")
+            
+            # Check if the player has won or lost before giving the turn to AI
+            if self.board.playing_state != "PLAYING":
+                continue
+
+            print("\n-- Board after your move--")
+            self.board.print_board("PLAYING")
+
+            # AI's turn after player's move
+            if action in ["reveal","flag"]:
+                print("\n-- AI's turn --")
+                ai_result = self.make_ai_move()
+                if ai_result == "HIT":
+                    self.board.playing_state = "LOST"
+                    print("AI hit a mine!")
+                elif ai_result == "NO_MOVES":
+                    print("AI has no moves left!")
+                
+                # Check if the AI's move resulted in a win
+                if self.board.playing_state != "LOST" and self.board.check_win():
+                    self.board.playing_state = "WON"
+                
+                # Only show the board after AI's move if the game is still ongoing
+                if self.board.playing_state == "PLAYING":
+                    print("Board After AI's Move:")
+                    self.board.print_board("PLAYING")
+                
+                # Only show the status once at the start of the player's next turn
+                show_start = False
+            else:
+                show_start = False    
 
         # when loop ends → game over
         self.end_screen()
@@ -145,11 +167,7 @@ class UI:
             if user_input == "quit":
                 print("Thanks for playing!")
                 exit()
-
-            # if user wants the AI to make a move
-            if user_input == "ai":
-                return "ai", -1, -1
-
+            # if user wants a hint
             if user_input == "hint":
                 hint_flag = True # If it is a hint, then make the flag become True.
                 if (self.hint > 0): # Only give a hint if the user has any hints left.
@@ -199,9 +217,17 @@ class UI:
     Based on the difficulty, call the appropriate AI function from board.py
     """
     def make_ai_move(self):
-        if self.board.difficulty == "easy":
+        # if self.board.difficulty == "easy":
+        #     return self.board.easy_ai_mode()
+        # elif self.board.difficulty == "medium":
+        #     return self.board.medium_ai_mode()
+        # elif self.board.difficulty == "hard":
+        #     return self.board.hard_ai_mode()
+        d = (self.board.difficulty or "").lower()
+        if d == "easy":
             return self.board.easy_ai_mode()
-        elif self.board.difficulty == "medium":
+        elif d == "medium":
             return self.board.medium_ai_mode()
-        elif self.board.difficulty == "hard":
+        elif d == "hard":
             return self.board.hard_ai_mode()
+        return "NO_MOVES"
