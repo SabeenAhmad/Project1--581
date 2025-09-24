@@ -14,7 +14,7 @@ class Board:
         self.flags_remaining = mine_total
         self.mines_initialized = False
         self.playing_state = "PLAYING"   # can be "PLAYING", "WON", "LOST"
-        self.difficulty = difficulty # can be "easy", "medium", "hard"
+        self.difficulty = difficulty # can be "EASY", "MEDIUM", "HARD"
 
 
     def print_board(self, playing_state):

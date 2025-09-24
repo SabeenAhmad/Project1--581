@@ -20,11 +20,11 @@ class UI:
                 print("invalid response")
         # Prompts for difficulty level until valid input is received
         while True:
-            difficulty = input("Choose difficulty (easy, medium, hard): ").strip().lower()
+            difficulty = input("Choose difficulty (EASY, MEDIUM, HARD): ").strip().lower()
             if difficulty in ["easy", "medium", "hard"]:
                 break
             else:
-                print("Invalid difficulty - choose 'easy', 'medium', or 'hard'")
+                print("Invalid difficulty - choose 'EASY', 'MEDIUM', or 'HARD'")
 
         self.board = Board(mines, difficulty)
         self.render_board() 
