@@ -7,8 +7,8 @@ class Board:
         self.width = 10
         self.length = 10
         self.mines = [[False]*self.width for _ in range(self.length)]
-        self.state   = [["COVERED"]*self.width for _ in range(self.length)]
-        self.adj     = [[0]*self.width for _ in range(self.length)]
+        self.state   = [["COVERED"]*self.width for _ in range(self.length)] # COVERED, FLAG, UNCOVERED
+        self.adj     = [[0]*self.width for _ in range(self.length)] # cell number
         self.mine_total = mine_total
         self.playing_state = True
         self.flags_remaining = mine_total
@@ -126,20 +126,27 @@ class Board:
     def is_mine(self,r,c):
         # check if cell has a mine
         return self.mines[r][c] == True
-        '''
+    '''
     Functionality: returns whether cell is flag
     Parameters: cell's row and column
     '''
     def is_flag(self,r,c):
         # check if cell is flagged
         return self.state[r][c] == 'FLAG'
-        '''
+    '''
     Functionality: returns whether cell is already uncovered
     Parameters: cell's row and column
     '''
     def is_uncovered(self,r,c):
         # check if cell is uncovered
         return self.state[r][c] == 'UNCOVERED'
+    '''
+    Functionality: returns whether cell is already covered
+    Parameters: cell's row and column
+    '''
+    def is_covered(self,r,c):
+        # check if cell is covered
+        return self.state[r][c] == 'COVERED'
     '''
     Functionality: Uncovers the cell, given that it is a valid move(not already uncovered, not a flag)
     Parameters: cell's row and column, if it is the first move
@@ -154,6 +161,8 @@ class Board:
             self.place_mine(r, c)
             self.compute_numbers()
             self.mines_initialized = True
+            print("\nBoard Key:") 
+            self.print_board("END") #prints board key after first reveal
 
         #ifirst move, mines were just placed excluding (r,c); uncover & expand zeros if needed
         if first_move:
@@ -251,8 +260,59 @@ class Board:
         self.flags_remaining -= 1
         return 'FLAGGED'
 
-    def hard_AI_mode(self):
+    """
+    Functionality: The AI randomly selects an covered cell (not flagged) and uncovers it for the user.
+    Parameters: N/A
+    """
+    def easy_ai_mode(self):
+        columns = "ABCDEFGHIJ" # All the possible columns to index from.
+        uncovered_cells = [] # List of all covered cells to select from
         for r in range(self.length):
             for c in range(self.width):
-                if not self.is_mine(r,c) and self.state[r][c] == "COVERED":
-                    return self.uncover(r,c,False)
+                if self.is_covered(r, c):
+                    # Iterates through all cells and adds the ones that are covered and not flagged
+                    uncovered_cells.append((r, c))
+        
+        # Check if there are any uncovered cells left
+        if not uncovered_cells:
+            return "NO_MOVES"
+
+        cell_index = random.randint(0, len(uncovered_cells)) # Randomly selects a cell to uncover
+        selected_r = uncovered_cells[cell_index][0]
+        selected_c = uncovered_cells[cell_index][1]
+        print(f"AI's Move: Reveal {columns[selected_c]}{selected_r+1}")
+        return self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
+    
+    """
+    Functionality: Placeholder for Medium AI code.
+    Parameters: N/A
+    """
+    def medium_ai_mode(self):
+        print("Medium AI Mode Selected - Not Yet Implemented")
+        return "NO_MOVES"
+    
+    """
+    Functionality: Placeholder for Hard AI code.
+    parameters: N/A
+    """
+    def hard_ai_mode(self):
+        for r in range(self.length):
+            for c in range(self.width):
+                if not self.is_mine(r,c) and self.is_covered(r,c) == True:
+                    return r, c, self.uncover(r,c,False)
+                
+    
+    """
+    Functionality: This will iterate through the board and find the first cell that is covered and a 0 safe cell.
+    It will return this as the hint.
+    Parameters: N/A.
+    """
+    def generate_hint(self):
+        columns = "ABCDEFGHIJ" # All the possible columns to index from to give the hint.
+        all_safe_cells = [] # Stores all the cells that have a 0.
+        for r in range(self.length): # Iterate through each cell of the board.
+            for c in range(self.length):
+                if self.is_uncovered(r,c) == False and self.adj[r][c] == 0: # Check if it is a covered or flagged cell and it is a cell with 0 adjacent mines.
+                    all_safe_cells.append((r+1, columns[c])) # This is a safe cell then.
+        rand_safe_cell = random.choice(all_safe_cells) # Choose a random safe cell to give the hint to.
+        print(f"Your Hint: A Safe Cell is Located in {rand_safe_cell[1]}{rand_safe_cell[0]}") # Print the hint message.
