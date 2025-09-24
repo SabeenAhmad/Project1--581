@@ -282,11 +282,11 @@ class Board:
     Parameters: N/A.
     """
     def generate_hint(self):
-        columns = "ABCDEFGHIJ"
-        all_safe_cells = []
-        for r in range(self.length):
+        columns = "ABCDEFGHIJ" # All the possible columns to index from to give the hint.
+        all_safe_cells = [] # Stores all the cells that have a 0.
+        for r in range(self.length): # Iterate through each cell of the board.
             for c in range(self.length):
-                if self.is_uncovered(r,c) == False and self.adj[r][c] == 0:
-                    all_safe_cells.append((r+1, columns[c]))
-        rand_safe_cell = random.choice(all_safe_cells)
-        print(f"Your Hint: A Safe Cell is Located in {rand_safe_cell[1]}{rand_safe_cell[0]}")
+                if self.is_uncovered(r,c) == False and self.adj[r][c] == 0: # Check if it is a covered or flagged cell and it is a cell with 0 adjacent mines.
+                    all_safe_cells.append((r+1, columns[c])) # This is a safe cell then.
+        rand_safe_cell = random.choice(all_safe_cells) # Choose a random safe cell to give the hint to.
+        print(f"Your Hint: A Safe Cell is Located in {rand_safe_cell[1]}{rand_safe_cell[0]}") # Print the hint message.
