@@ -65,6 +65,7 @@ class UI:
         # Functionality: Shows current game stats such as flags remaining, inferred mine count, and game state.
         # Parameters: (none)
         flags_remaining = self.board.flags_remaining
+        print("----------------------------------------------")
         print(f"Flags remaining: {flags_remaining}")
         mine_count = self.board.mine_total - flags_remaining
         print(f"Mine Count: {mine_count}")
@@ -120,7 +121,7 @@ class UI:
             # Check if the player has won or lost before giving the turn to AI
             if self.board.playing_state != "PLAYING":
                 continue
-
+            self.render_status()
             print("\n-- Board after your move--")
             self.board.print_board("PLAYING")
 
@@ -130,7 +131,7 @@ class UI:
                 ai_result = self.make_ai_move()
                 if ai_result == "HIT":
                     self.board.playing_state = "LOST"
-                    print("AI hit a mine!")
+                    print("💣 AI hit a mine!")
                 elif ai_result == "NO_MOVES":
                     print("AI has no moves left!")
                 
@@ -217,12 +218,6 @@ class UI:
     Based on the difficulty, call the appropriate AI function from board.py
     """
     def make_ai_move(self):
-        # if self.board.difficulty == "easy":
-        #     return self.board.easy_ai_mode()
-        # elif self.board.difficulty == "medium":
-        #     return self.board.medium_ai_mode()
-        # elif self.board.difficulty == "hard":
-        #     return self.board.hard_ai_mode()
         d = (self.board.difficulty or "").lower()
         if d == "easy":
             return self.board.easy_ai_mode()
