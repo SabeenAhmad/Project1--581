@@ -1,10 +1,13 @@
 # UI file
+import time
 from board import Board
 class UI: 
     def __init__(self):
         self.board = None # Stores a reference to the Board object so board.py can be reached.
         self.hint = 2 # The amount of hints left for the user in the game.
         self.difficulty = None # Stores the difficulty status for the AI (None, "EASY", "MEDIUM", "HARD")
+        self.start_time = 0
+        self.end_time = 0
 
     def start_screen(self):
         # Functionality: Displays the welcome screen, prompts for valid mine count, then creates the Game and Board and starts rendering.
@@ -37,7 +40,7 @@ class UI:
                 break
             else:
                 print("Please enter 'y' or 'n'.")
-        
+        self.start_time = time.time()
         self.board = Board(mines)
         self.render_board() 
 
@@ -46,12 +49,15 @@ class UI:
         # Parameters: (none)
         print("\n=== Game Over ===")
         if self.board.playing_state == "WON":
+            self.end_time = time.time()
             print("Congratulations, you won!")
         else:
+            self.end_time = time.time()
             print("💣 A mine was hit. Better luck next time!")
 
         # reveal full board at the end
-        self.board.print_board("END")
+        elapsed_time = round((self.end_time - self.start_time), 2)
+        self.board.print_board("END", elapsed_time)
 
         # ask to play again
         while True:
@@ -87,6 +93,7 @@ class UI:
         # Displays the current difficulty level
         if self.difficulty is not None:
             print(f"Current Difficulty: {self.difficulty.upper()}")
+        print(f"Timer: {round((time.time() - self.start_time), 2)}")
 
     def render_board(self): 
         # Functionality: Main game loop—renders status and board, accepts moves, updates state, and detects win/loss.
