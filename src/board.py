@@ -275,6 +275,8 @@ class Board:
         cell_index = random.randint(0, len(uncovered_cells)) # Randomly selects a cell to uncover
         selected_r = uncovered_cells[cell_index][0]
         selected_c = uncovered_cells[cell_index][1]
+        
+        # Returns the selected row and col and the status after uncovering
         return selected_r, selected_c, self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
     
     """
