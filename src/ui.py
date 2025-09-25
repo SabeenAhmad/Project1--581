@@ -4,7 +4,7 @@ class UI:
     def __init__(self):
         self.board = None # Stores a reference to the Board object so board.py can be reached.
         self.hint = 2 # The amount of hints left for the user in the game.
-        self.difficulty = None
+        self.difficulty = None # Stores the difficulty status for the AI (None, "EASY", "MEDIUM", "HARD")
 
     def start_screen(self):
         # Functionality: Displays the welcome screen, prompts for valid mine count, then creates the Game and Board and starts rendering.
@@ -21,10 +21,11 @@ class UI:
                 print("invalid response")
 
         while True:
-        # Prompts for difficulty level until valid input is received
+            # Prompts user if they want to use the AI mode until valid input is received
             play_with_AI_mode = input("Would you like to play using AI? (y/n): ").strip().lower()
             if play_with_AI_mode in ("y", "yes"):
                 while True:
+                    # Prompts for difficulty level until valid input is received
                     difficulty = input("Choose difficulty (EASY, MEDIUM, HARD): ").strip().lower()
                     if difficulty in ["easy", "medium", "hard"]:
                         self.difficulty = difficulty
@@ -97,7 +98,6 @@ class UI:
         #     self.render_status()
         #     self.board.print_board("PLAYING")
 
-        columns = "ABCDEFGHIJ" # All the possible columns to index from.
         first_move = True
         show_start = True
         while self.board.playing_state == "PLAYING":
@@ -143,7 +143,7 @@ class UI:
             if action in ["reveal","flag"] and self.difficulty is not None:
                 print("\n-- AI's turn --")
                 r, c, ai_result = self.make_ai_move()
-                print(f"AI's Move: Reveal {columns[c]}{r+1}")
+                print(f"AI's Move: Reveal {chr(c + 65)}{r + 1}")
                 if ai_result == "HIT":
                     self.board.playing_state = "LOST"
                     print("💣 AI hit a mine!")
