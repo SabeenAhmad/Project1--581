@@ -4,6 +4,7 @@ class UI:
     def __init__(self):
         self.board = None # Stores a reference to the Board object so board.py can be reached.
         self.hint = 2 # The amount of hints left for the user in the game.
+        self.difficulty = None
 
     def start_screen(self):
         # Functionality: Displays the welcome screen, prompts for valid mine count, then creates the Game and Board and starts rendering.
@@ -12,21 +13,31 @@ class UI:
         while True:
             try:
                 mines = int(input("How many mines do you want on the board, must choose between 10-20: "))
-                if mines <= 20 and mines >=10:
+                if mines >= 10 and mines <= 20:
                     break
                 else:
                     print("invalid mine count")
             except:
                 print("invalid response")
-        # Prompts for difficulty level until valid input is received
+
         while True:
-            difficulty = input("Choose difficulty (EASY, MEDIUM, HARD): ").strip().lower()
-            if difficulty in ["easy", "medium", "hard"]:
+        # Prompts for difficulty level until valid input is received
+            play_with_AI_mode = input("Would you like to play using AI? (y/n): ").strip().lower()
+            if play_with_AI_mode in ("y", "yes"):
+                while True:
+                    difficulty = input("Choose difficulty (EASY, MEDIUM, HARD): ").strip().lower()
+                    if difficulty in ["easy", "medium", "hard"]:
+                        self.difficulty = difficulty
+                        break
+                    else:
+                        print("Invalid difficulty - choose 'EASY', 'MEDIUM', or 'HARD'")
+                break
+            elif play_with_AI_mode in ("n", "no"):
                 break
             else:
-                print("Invalid difficulty - choose 'EASY', 'MEDIUM', or 'HARD'")
-
-        self.board = Board(mines, difficulty)
+                print("Please enter 'y' or 'n'.")
+        
+        self.board = Board(mines)
         self.render_board() 
 
     def end_screen(self):
@@ -48,7 +59,8 @@ class UI:
                 # reset the game
                 self.board.playing_state = "PLAYING"
                 # create a new board with the same settings
-                self.board = Board(self.board.mine_total, self.board.difficulty) 
+                self.board = Board(self.board.mine_total)
+                self.difficulty = None
                 self.start_screen()
                 break
             elif again in ("n", "no"):
@@ -72,7 +84,8 @@ class UI:
         print(f"Hints Left: {self.hint}")
         print(f"Game State: {self.board.playing_state}")
         # Displays the current difficulty level
-        print(f"Current Difficulty: {self.board.difficulty.upper()}")
+        if self.difficulty is not None:
+            print(f"Current Difficulty: {self.difficulty.upper()}")
 
     def render_board(self): 
         # Functionality: Main game loop—renders status and board, accepts moves, updates state, and detects win/loss.
@@ -121,21 +134,19 @@ class UI:
             
             # Check if the player has won or lost before giving the turn to AI
             if self.board.playing_state != "PLAYING":
-                continue
+                break
             self.render_status()
             print("\n-- Board after your move --")
             self.board.print_board("PLAYING")
 
             # AI's turn after player's move
-            if action in ["reveal","flag"]:
+            if action in ["reveal","flag"] and self.difficulty is not None:
                 print("\n-- AI's turn --")
                 r, c, ai_result = self.make_ai_move()
                 print(f"AI's Move: Reveal {columns[c]}{r+1}")
                 if ai_result == "HIT":
                     self.board.playing_state = "LOST"
                     print("💣 AI hit a mine!")
-                elif ai_result == "NO_MOVES":
-                    print("AI has no moves left!")
                 
                 # Check if the AI's move resulted in a win
                 if self.board.playing_state != "LOST" and self.board.check_win():
@@ -220,11 +231,9 @@ class UI:
     Based on the difficulty, call the appropriate AI function from board.py
     """
     def make_ai_move(self):
-        d = (self.board.difficulty or "").lower()
+        d = (self.difficulty).lower()
         if d == "easy":
             return self.board.easy_ai_mode()
         elif d == "medium":
             return self.board.medium_ai_mode()
-        elif d == "hard":
-            return self.board.hard_ai_mode()
-        return "NO_MOVES"
+        return self.board.hard_ai_mode()
