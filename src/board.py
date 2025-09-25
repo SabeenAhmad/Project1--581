@@ -271,10 +271,6 @@ class Board:
                 if self.is_covered(r, c):
                     # Iterates through all cells and adds the ones that are covered and not flagged
                     uncovered_cells.append((r, c))
-        
-        # Check if there are any uncovered cells left
-        if not uncovered_cells:
-            return "NO_MOVES"
 
         cell_index = random.randint(0, len(uncovered_cells)) # Randomly selects a cell to uncover
         selected_r = uncovered_cells[cell_index][0]
@@ -287,7 +283,7 @@ class Board:
     """
     def medium_ai_mode(self):
         print("Medium AI Mode Selected - Not Yet Implemented")
-        return "NO_MOVES"
+        return NotImplementedError
     
     """
     Functionality: Placeholder for Hard AI code.
