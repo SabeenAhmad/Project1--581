@@ -16,7 +16,7 @@ class Board:
         self.playing_state = "PLAYING"   # can be "PLAYING", "WON", "LOST"
 
 
-    def print_board(self, playing_state):
+    def print_board(self, playing_state, elapsed_time=0):
         # Functionality: Prints the current state of the board to the console, showing covered tiles, flags, numbers, or mines.
         # Parameter: playing_state - indicates whether the game is in progress ('PLAYING') or finished (reveals all cells).
         cell_width = 3
@@ -62,6 +62,8 @@ class Board:
                 print(f"{ch:>{cell_width}}", end="")
             print()
             print()
+        if playing_state == "END":
+            print(f"Final Time Score: {elapsed_time}")
 
     def in_bounds(self, r, c):
     # Functionality: Checks if the given cell position is within the dimensions of the board.
