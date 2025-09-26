@@ -14,6 +14,7 @@ class Board:
         self.flags_remaining = mine_total
         self.mines_initialized = False
         self.playing_state = "PLAYING"   # can be "PLAYING", "WON", "LOST"
+        self.is_random = True 
 
 
     def print_board(self, playing_state, elapsed_time=0):
@@ -282,12 +283,64 @@ class Board:
         return selected_r, selected_c, self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
     
     """
-    Functionality: Placeholder for Medium AI code.
+    Functionality: AI uncovers randomly until a safe cell is revealed (zero adjacent mines), then uncovers adjacent cells strategically using revealed numbers.
     Parameters: N/A
     """
+    '''
+        set flag self.is_random which init to true <-- member variable
+        if self.is_random:
+            then use easy_ai_mode
+            keep track of r,c that was revealed
+            check if that is 0, then turn flag to false
+        else:
+            Create an array num_cells
+            Create dict to keep track the probability -- prob_dict
+            Iterate through the rows and cols and add cells that are revealed (self.state) and not 0 (self.adj) and add to num_cells
+            
+            Iterate through num_cells and use the neighbor function to determine all its neighbors
+                Then determine how many neighbors are still covered --> n (another for loop to check self.is_covered == True)
+                Another separate for loop - Probability that that neighboring cell is a mine is 1/n
+                Store that (r, c) --> 1/n to the prob_dict
+            
+            After that is done with all cells in num_cells, find the min value (which is the probability) in prod_dict.value and that is the cell
+                to reveal
+
+        return r, c, self.uncover(r, c, False)
+    '''
     def medium_ai_mode(self):
-        print("Medium AI Mode Selected - Not Yet Implemented")
-        return NotImplementedError
+        if self.is_random: 
+           r, c, result = self.easy_ai_mode() 
+           if self.adj[r][c] == 0: # If cell revealed is 0, turn flag to false
+               self.is_random = False 
+           return r, c, result 
+        else: 
+            num_cells = [] # Stores uncovered numbered cells 
+            prob_dict = {} # Keeps track of the probability 
+            for r in range(self.length):  # Iterate through rows 
+                for c in range(self.width): # Iterate through columns
+                    if self.state[r][c] == "UNCOVERED" and self.adj[r][c] > 0: # Add cells that are revealed and not 0 to num_cells
+                        num_cells.append((r,c)) 
+            for r, c in num_cells: # Iterate through num_cells
+                neighbors = self.neighbors(r,c)
+                n = 0 # Count for how many neighbors are covered
+                for rr, cc in neighbors: # Determine which neighbors are covered
+                    if self.is_covered(rr, cc):
+                        n += 1 
+                if n == 0: # Skip cell with no covered neighbors 
+                    continue
+                prob = 1/n
+                for rr, cc in neighbors: 
+                    if self.is_covered(rr, cc): # Assign probabilities to covered neighbors
+                        if (rr, cc) in prob_dict: # If covered cell already has probability, choose minimum value as its probability
+                            prob_dict[(rr, cc)] = max(prob_dict[(rr, cc)], prob)
+                        else: 
+                            prob_dict[(rr, cc)] = prob
+            min_prob = min(prob_dict.values()) # Find the minimum probability 
+            for cell, prob in prob_dict.items(): # Find the cell with that minimum probability
+                if prob == min_prob: 
+                    r, c = cell 
+                    break
+            return r, c, self.uncover(r, c, False)
     
     """
     Functionality: The AI always selects a covered safe-cell (not flagged and not mined) and uncovers it for the user.
