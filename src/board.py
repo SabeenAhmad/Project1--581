@@ -1,5 +1,6 @@
 import random
 from collections import deque
+import ui
 
 class Board:
     def __init__ (self, mine_total):
@@ -14,7 +15,6 @@ class Board:
         self.flags_remaining = mine_total
         self.mines_initialized = False
         self.playing_state = "PLAYING"   # can be "PLAYING", "WON", "LOST"
-        self.is_random = True 
 
 
     def print_board(self, playing_state, elapsed_time=0):
@@ -283,64 +283,79 @@ class Board:
         return selected_r, selected_c, self.uncover(selected_r, selected_c, False) # Calls uncover function to uncover selected cell    
     
     """
+    Functionality: 
+    Parameters: N/A
+    """
+    def get_covered_neighbors(self, r, c):
+        covered_neighbors = []
+        neighbors = self.neighbors(r, c)
+        for rr, cc in neighbors: # Determine which neighbors are covered
+            if self.is_covered(rr, cc):
+                covered_neighbors.append((rr, cc))
+        return covered_neighbors
+    
+    """
+    Functionality: 
+    Parameters: N/A
+    """
+    def get_flagged_neighbors(self, r, c):
+        flagged_neighbors = []
+        neighbors = self.neighbors(r, c)
+        for rr, cc in neighbors: # Determine which neighbors are covered
+            if self.is_flag(rr, cc):
+                flagged_neighbors.append((rr, cc))
+        return flagged_neighbors
+    
+    """
     Functionality: AI uncovers randomly until a safe cell is revealed (zero adjacent mines), then uncovers adjacent cells strategically using revealed numbers.
     Parameters: N/A
     """
-    '''
-        set flag self.is_random which init to true <-- member variable
-        if self.is_random:
-            then use easy_ai_mode
-            keep track of r,c that was revealed
-            check if that is 0, then turn flag to false
-        else:
-            Create an array num_cells
-            Create dict to keep track the probability -- prob_dict
-            Iterate through the rows and cols and add cells that are revealed (self.state) and not 0 (self.adj) and add to num_cells
-            
-            Iterate through num_cells and use the neighbor function to determine all its neighbors
-                Then determine how many neighbors are still covered --> n (another for loop to check self.is_covered == True)
-                Another separate for loop - Probability that that neighboring cell is a mine is 1/n
-                Store that (r, c) --> 1/n to the prob_dict
-            
-            After that is done with all cells in num_cells, find the min value (which is the probability) in prod_dict.value and that is the cell
-                to reveal
+    def medium_ai_mode(self, use_random = True): # use_random for hard ai mode
+        num_cells = [] # Stores uncovered numbered cells 
+        not_random = False # is_random used internally 
+        result = None
+        cells_no_action = 0 # Check if rule 2 does not apply
+        last_flagged_r = None # Store last flagged row
+        last_flagged_c = None # Store last flaggged column
+        
+        for r in range(self.length):  # Iterate through rows 
+            for c in range(self.width): # Iterate through columns
+                if self.state[r][c] == "UNCOVERED" and self.adj[r][c] > 0: # Add cells that are revealed and not 0 to num_cells
+                    num_cells.append((r, c)) 
 
-        return r, c, self.uncover(r, c, False)
-    '''
-    def medium_ai_mode(self):
-        if self.is_random: 
-           r, c, result = self.easy_ai_mode() 
-           if self.adj[r][c] == 0: # If cell revealed is 0, turn flag to false
-               self.is_random = False 
-           return r, c, result 
-        else: 
-            num_cells = [] # Stores uncovered numbered cells 
-            prob_dict = {} # Keeps track of the probability 
-            for r in range(self.length):  # Iterate through rows 
-                for c in range(self.width): # Iterate through columns
-                    if self.state[r][c] == "UNCOVERED" and self.adj[r][c] > 0: # Add cells that are revealed and not 0 to num_cells
-                        num_cells.append((r,c)) 
-            for r, c in num_cells: # Iterate through num_cells
-                neighbors = self.neighbors(r,c)
-                n = 0 # Count for how many neighbors are covered
-                for rr, cc in neighbors: # Determine which neighbors are covered
-                    if self.is_covered(rr, cc):
-                        n += 1 
-                if n == 0: # Skip cell with no covered neighbors 
-                    continue
-                prob = 1/n
-                for rr, cc in neighbors: 
-                    if self.is_covered(rr, cc): # Assign probabilities to covered neighbors
-                        if (rr, cc) in prob_dict: # If covered cell already has probability, choose minimum value as its probability
-                            prob_dict[(rr, cc)] = max(prob_dict[(rr, cc)], prob)
-                        else: 
-                            prob_dict[(rr, cc)] = prob
-            min_prob = min(prob_dict.values()) # Find the minimum probability 
-            for cell, prob in prob_dict.items(): # Find the cell with that minimum probability
-                if prob == min_prob: 
-                    r, c = cell 
-                    break
-            return r, c, self.uncover(r, c, False)
+        # Rule 1: if the number of hidden neighbors of a revealed cell equals that cell’s number, the AI should flag all hidden neighbors
+        for r, c in num_cells: 
+            covered_cells = self.get_covered_neighbors(r, c)
+            flagged_cells = self.get_flagged_neighbors(r, c)
+            if len(covered_cells) + len(flagged_cells) == self.adj[r][c]:
+                for rr, cc in covered_cells:
+                    self.toggle_flag(rr, cc) 
+                    ui.print_ai_move(rr, cc, "FLAGGED")
+                    last_flagged_r = rr
+                    last_flagged_c = cc
+                    not_random = True
+        
+        # Rule 2: if the number of flagged neighbors of a revealed cell equals that cell’s number, the AI should open all other hidden neighbors
+        for r, c in num_cells: 
+            n = len(self.get_flagged_neighbors(r, c))
+            if n == self.adj[r][c]: # Check if they are equal
+                covered_cells = self.get_covered_neighbors(r, c)
+                if len(covered_cells) > 0: 
+                    for i in range(0, len(covered_cells)):
+                        not_random = True
+                        result = self.uncover(covered_cells[i][0], covered_cells[i][1], False)
+                        if (result == "SAFE" or result == "REVEALED") and i != len(covered_cells)-1: 
+                            ui.print_ai_move(covered_cells[i][0], covered_cells[i][1], "REVEALED")
+                            continue
+                        elif result == "HIT" or i == len(covered_cells)-1 or self.check_win(): 
+                            return covered_cells[i][0], covered_cells[i][1], result
+                else: 
+                    cells_no_action += 1
+                   
+        if not_random == False: 
+            return self.easy_ai_mode()
+        elif cells_no_action == len(num_cells):
+            return last_flagged_r, last_flagged_c, "FLAGGED"
     
     """
     Functionality: The AI always selects a covered safe-cell (not flagged and not mined) and uncovers it for the user.

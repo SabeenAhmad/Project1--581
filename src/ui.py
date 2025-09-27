@@ -150,7 +150,9 @@ class UI:
             if action in ["reveal","flag"] and self.difficulty is not None:
                 print("\n-- AI's turn --")
                 r, c, ai_result = self.make_ai_move()
-                print(f"AI's Move: Reveal {chr(c + 65)}{r + 1}")
+                if ai_result == "SAFE": 
+                    ai_result = "REVEALED"
+                print(f"AI's Move: {ai_result} {chr(c + 65)}{r + 1}")
                 if ai_result == "HIT":
                     self.board.playing_state = "LOST"
                     print("💣 AI hit a mine!")
@@ -244,3 +246,6 @@ class UI:
         elif d == "medium":
             return self.board.medium_ai_mode()
         return self.board.hard_ai_mode()
+    
+def print_ai_move(r, c, result):
+    print(f"AI's Move: {result} {chr(c + 65)}{r + 1}")
